@@ -1,13 +1,23 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, BookOpen, Calculator, BrainCircuit, ArrowRight, CheckCircle2, TrendingUp, Menu, X, Mail, Send, LineChart, Globe, Smartphone, HelpCircle } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Calculator, BrainCircuit, ArrowRight, CheckCircle2, TrendingUp, Menu, X, Mail, Send, LineChart, Globe, Smartphone, HelpCircle, Sun, Moon } from 'lucide-react';
 
 interface LandingPageProps {
   onStart: () => void;
   onNavigateToContacts: () => void;
   onNavigateToPricing: () => void;
+  onNavigateToBlog: () => void;
+  isDarkMode: boolean;
+  toggleTheme: () => void;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigateToContacts, onNavigateToPricing }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ 
+  onStart, 
+  onNavigateToContacts, 
+  onNavigateToPricing, 
+  onNavigateToBlog,
+  isDarkMode,
+  toggleTheme
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -42,6 +52,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigateToContacts
               >
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
+
+              {/* Theme Toggle Button - Right of Burger */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                aria-label={isDarkMode ? "Включить светлую тему" : "Включить темную тему"}
+              >
+                {isDarkMode ? <Sun size={24} /> : <Moon size={24} />}
+              </button>
             </div>
           </div>
         </div>
@@ -66,13 +85,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigateToContacts
               >
                 Цены
               </button>
-              <a 
-                href="#" 
+              <button 
                 className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onNavigateToBlog();
+                }}
               >
                 Блог
-              </a>
+              </button>
               <button 
                 className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
                 onClick={() => {
@@ -324,7 +345,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigateToContacts
                     Цены
                   </button>
                 </li>
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Блог</a></li>
+                <li>
+                  <button 
+                    onClick={onNavigateToBlog}
+                    className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
+                  >
+                    Блог
+                  </button>
+                </li>
                 <li>
                   <button 
                     onClick={onNavigateToContacts}

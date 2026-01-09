@@ -11,9 +11,10 @@ import HomePage from './components/HomePage';
 import LandingPage from './components/LandingPage';
 import Contacts from './components/Contacts';
 import Pricing from './components/Pricing';
+import Blog from './components/Blog';
 import { Home, LayoutDashboard, BookOpen, Calculator, BrainCircuit } from 'lucide-react';
 
-type PublicViewState = 'LANDING' | 'AUTH' | 'CONTACTS' | 'PRICING';
+type PublicViewState = 'LANDING' | 'AUTH' | 'CONTACTS' | 'PRICING' | 'BLOG';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -89,22 +90,55 @@ const App: React.FC = () => {
     setPublicView('LANDING'); // Reset to Landing Page
   };
 
-  // If user is not logged in, show Landing Page, Auth, Contacts or Pricing
+  // If user is not logged in, show Landing Page, Auth, Contacts, Pricing or Blog
   if (!user) {
     if (publicView === 'AUTH') {
       return <Auth onLogin={handleLogin} onBack={() => setPublicView('LANDING')} />;
     }
     if (publicView === 'CONTACTS') {
-      return <Contacts onBack={() => setPublicView('LANDING')} />;
+      return (
+        <Contacts 
+          onBack={() => setPublicView('LANDING')} 
+          onStart={() => setPublicView('AUTH')}
+          onNavigateToPricing={() => setPublicView('PRICING')}
+          onNavigateToBlog={() => setPublicView('BLOG')}
+          isDarkMode={isDarkMode}
+          toggleTheme={toggleTheme}
+        />
+      );
     }
     if (publicView === 'PRICING') {
-      return <Pricing onBack={() => setPublicView('LANDING')} onStart={() => setPublicView('AUTH')} />;
+      return (
+        <Pricing 
+          onBack={() => setPublicView('LANDING')} 
+          onStart={() => setPublicView('AUTH')}
+          onNavigateToContacts={() => setPublicView('CONTACTS')}
+          onNavigateToBlog={() => setPublicView('BLOG')}
+          isDarkMode={isDarkMode}
+          toggleTheme={toggleTheme}
+        />
+      );
+    }
+    if (publicView === 'BLOG') {
+      return (
+        <Blog 
+          onBack={() => setPublicView('LANDING')}
+          onStart={() => setPublicView('AUTH')}
+          onNavigateToPricing={() => setPublicView('PRICING')}
+          onNavigateToContacts={() => setPublicView('CONTACTS')}
+          isDarkMode={isDarkMode}
+          toggleTheme={toggleTheme}
+        />
+      );
     }
     return (
       <LandingPage 
         onStart={() => setPublicView('AUTH')} 
         onNavigateToContacts={() => setPublicView('CONTACTS')}
         onNavigateToPricing={() => setPublicView('PRICING')}
+        onNavigateToBlog={() => setPublicView('BLOG')}
+        isDarkMode={isDarkMode}
+        toggleTheme={toggleTheme}
       />
     );
   }
