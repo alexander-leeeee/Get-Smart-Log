@@ -27,7 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, onLogout, 
           alt="GSL Logo" 
           className="h-8 w-auto rounded-lg" 
         />
-        <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">TradeMind</h1>
+        <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Get Smart Log</h1>
       </div>
 
       <nav className="flex-1 space-y-2">

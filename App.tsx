@@ -106,7 +106,7 @@ const App: React.FC = () => {
       
       {/* Mobile Header (visible only on small screens) */}
       <div className="md:hidden fixed top-0 left-0 right-0 bg-white dark:bg-slate-900 p-4 border-b border-slate-200 dark:border-slate-800 z-50 flex justify-between items-center transition-colors">
-        <span className="font-bold">TradeMind</span>
+        <span className="font-bold">Get Smart Log</span>
         <button onClick={handleLogout} className="text-sm text-red-500 dark:text-red-400">Выйти</button>
       </div>
 

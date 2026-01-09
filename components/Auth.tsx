@@ -41,7 +41,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onBack }) => {
             alt="GSL Logo" 
             className="h-16 w-auto mx-auto mb-4 rounded-xl" 
           />
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">TradeMind AI</h1>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Get Smart Log</h1>
           <p className="text-slate-500 dark:text-slate-400">
             {isLogin ? 'С возвращением! Войдите в аккаунт.' : 'Создайте аккаунт и улучшите торговлю.'}
           </p>

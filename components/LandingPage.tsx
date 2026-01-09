@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, BookOpen, Calculator, BrainCircuit, ArrowRight, CheckCircle2, TrendingUp, Menu, X, Mail, MapPin, LineChart, Globe, Smartphone, HelpCircle } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Calculator, BrainCircuit, ArrowRight, CheckCircle2, TrendingUp, Menu, X, Mail, Send, LineChart, Globe, Smartphone, HelpCircle } from 'lucide-react';
 
 interface LandingPageProps {
   onStart: () => void;
@@ -21,7 +21,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
                 alt="GSL Logo" 
                 className="h-8 w-auto rounded-lg" 
               />
-              <span className="text-xl font-bold">TradeMind AI</span>
+              <span className="text-xl font-bold">Get Smart Log</span>
             </div>
 
             {/* Actions */}
@@ -126,7 +126,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
                 Систематизируйте успех с передовыми инструментами
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400">
-                TradeMind AI — это не просто журнал сделок, это комплексная экосистема для трейдеров любого уровня. Наша платформа помогает выявлять паттерны в вашем поведении, минимизировать эмоциональные ошибки и оптимизировать стратегию с помощью машинного обучения.
+                Get Smart Log — это не просто журнал сделок, это комплексная экосистема для трейдеров любого уровня. Наша платформа помогает выявлять паттерны в вашем поведении, минимизировать эмоциональные ошибки и оптимизировать стратегию с помощью машинного обучения.
               </p>
               <ul className="space-y-4 text-slate-600 dark:text-slate-400">
                 <li className="flex gap-3">
@@ -156,7 +156,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               <div className="relative bg-slate-100 dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-2xl">
                  <img 
                    src="https://placehold.co/800x600/1e293b/FFF?text=Dashboard+Preview" 
-                   alt="Интерфейс TradeMind AI с графиками и аналитикой" 
+                   alt="Get Smart Log" 
                    className="w-full h-auto object-cover opacity-90 hover:opacity-100 transition-opacity duration-500"
                  />
               </div>
@@ -257,7 +257,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               },
               {
                 q: "Какие рынки поддерживаются?",
-                a: "TradeMind AI универсален. Вы можете записывать сделки с криптовалютных бирж, Форекса или фондового рынка."
+                a: "Get Smart Log универсален. Вы можете записывать сделки с криптовалютных бирж, Форекса или фондового рынка."
               },
               {
                 q: "Безопасны ли мои данные?",
@@ -298,7 +298,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
                   alt="GSL Logo" 
                   className="h-8 w-auto rounded-lg" 
                 />
-                <span className="text-xl font-bold text-slate-900 dark:text-white">TradeMind AI</span>
+                <span className="text-xl font-bold text-slate-900 dark:text-white">Get Smart Log</span>
               </div>
               <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
                 Ваш надежный партнер в мире трейдинга. Анализируйте, учитесь и зарабатывайте с помощью передовых технологий.
@@ -310,8 +310,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Меню</h3>
               <ul className="space-y-3">
                 <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Главная</a></li>
-                <li><a href="#features" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Возможности</a></li>
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Тарифы</a></li>
+                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Цены</a></li>
                 <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Блог</a></li>
               </ul>
             </div>
@@ -332,11 +331,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               <ul className="space-y-3">
                 <li className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
                   <Mail size={16} className="text-blue-500" />
-                  <a href="mailto:support@trademind.ai" className="hover:text-blue-600 transition-colors">support@trademind.ai</a>
+                  <a href="mailto:support@getsmartlog.com" className="hover:text-blue-600 transition-colors">support@getsmartlog.com</a>
                 </li>
                 <li className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
-                  <MapPin size={16} className="text-blue-500" />
-                  <span>Москва, Деловой Центр</span>
+                  <Send size={16} className="text-blue-500" />
+                  <a href="https://t.me/alexander_leeee" target="_blank" rel="noopener noreferrer" className="hover:text-blue-600 transition-colors">Telegram</a>
                 </li>
               </ul>
             </div>
@@ -344,7 +343,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
 
           {/* Bottom Bar */}
           <div className="border-t border-slate-200 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 dark:text-slate-500">
-            <p>&copy; {new Date().getFullYear()} TradeMind AI. Все права защищены.</p>
+            <p>&copy; {new Date().getFullYear()} Get Smart Log. Все права защищены.</p>
             <div className="flex gap-6">
               {/* Social icons could go here */}
             </div>
