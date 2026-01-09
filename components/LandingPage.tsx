@@ -125,7 +125,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
         <div className="max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-8">
             <TrendingUp size={16} />
-            <span>AI Торговый Ассистент</span>
+            <span>Торговый ассистент на базе ИИ</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
             Торгуйте разумно <br /> с поддержкой ИИ

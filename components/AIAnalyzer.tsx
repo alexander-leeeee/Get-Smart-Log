@@ -29,7 +29,7 @@ const AIAnalyzer: React.FC = () => {
            <Bot className="text-purple-600 dark:text-purple-400" size={24} />
         </div>
         <div>
-          <h2 className="font-bold text-slate-900 dark:text-white">AI Торговый Ассистент</h2>
+          <h2 className="font-bold text-slate-900 dark:text-white">Торговый ассистент на базе ИИ</h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">Powered by Gemini 3 Flash</p>
         </div>
       </div>
