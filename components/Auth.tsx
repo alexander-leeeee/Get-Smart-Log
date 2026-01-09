@@ -36,9 +36,11 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onBack }) => {
         </button>
 
         <div className="text-center mb-8 mt-4">
-          <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
-            <span className="font-bold text-white text-xl">TM</span>
-          </div>
+          <img 
+            src="https://placehold.co/100x100/2563eb/ffffff?text=GSL" 
+            alt="GSL Logo" 
+            className="h-16 w-auto mx-auto mb-4 rounded-xl" 
+          />
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">TradeMind AI</h1>
           <p className="text-slate-500 dark:text-slate-400">
             {isLogin ? 'С возвращением! Войдите в аккаунт.' : 'Создайте аккаунт и улучшите торговлю.'}

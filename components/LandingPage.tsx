@@ -16,9 +16,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
           <div className="flex justify-between h-16 items-center">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span className="font-bold text-white">TM</span>
-              </div>
+              <img 
+                src="https://placehold.co/100x100/2563eb/ffffff?text=GSL" 
+                alt="GSL Logo" 
+                className="h-8 w-auto rounded-lg" 
+              />
               <span className="text-xl font-bold">TradeMind AI</span>
             </div>
 
@@ -291,9 +293,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
             {/* Brand Info */}
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <span className="font-bold text-white">TM</span>
-                </div>
+                <img 
+                  src="https://placehold.co/100x100/2563eb/ffffff?text=GSL" 
+                  alt="GSL Logo" 
+                  className="h-8 w-auto rounded-lg" 
+                />
                 <span className="text-xl font-bold text-slate-900 dark:text-white">TradeMind AI</span>
               </div>
               <p className="text-slate-500 dark:text-slate-400 leading-relaxed">

@@ -22,9 +22,11 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, onLogout, 
   return (
     <div className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen flex flex-col p-4 fixed left-0 top-0 hidden md:flex transition-colors">
       <div className="flex items-center gap-2 mb-8 px-2">
-        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-          <span className="font-bold text-white">TM</span>
-        </div>
+        <img 
+          src="https://placehold.co/100x100/2563eb/ffffff?text=GSL" 
+          alt="GSL Logo" 
+          className="h-8 w-auto rounded-lg" 
+        />
         <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">TradeMind</h1>
       </div>
 
