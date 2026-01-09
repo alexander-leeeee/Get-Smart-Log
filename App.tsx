@@ -12,9 +12,11 @@ import LandingPage from './components/LandingPage';
 import Contacts from './components/Contacts';
 import Pricing from './components/Pricing';
 import Blog from './components/Blog';
+import PublicOffer from './components/PublicOffer';
+import PrivacyPolicy from './components/PrivacyPolicy';
 import { Home, LayoutDashboard, BookOpen, Calculator, BrainCircuit } from 'lucide-react';
 
-type PublicViewState = 'LANDING' | 'AUTH' | 'CONTACTS' | 'PRICING' | 'BLOG';
+type PublicViewState = 'LANDING' | 'AUTH' | 'CONTACTS' | 'PRICING' | 'BLOG' | 'PUBLIC_OFFER' | 'PRIVACY_POLICY';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -102,6 +104,8 @@ const App: React.FC = () => {
           onStart={() => setPublicView('AUTH')}
           onNavigateToPricing={() => setPublicView('PRICING')}
           onNavigateToBlog={() => setPublicView('BLOG')}
+          onNavigateToPublicOffer={() => setPublicView('PUBLIC_OFFER')}
+          onNavigateToPrivacyPolicy={() => setPublicView('PRIVACY_POLICY')}
           isDarkMode={isDarkMode}
           toggleTheme={toggleTheme}
         />
@@ -114,6 +118,8 @@ const App: React.FC = () => {
           onStart={() => setPublicView('AUTH')}
           onNavigateToContacts={() => setPublicView('CONTACTS')}
           onNavigateToBlog={() => setPublicView('BLOG')}
+          onNavigateToPublicOffer={() => setPublicView('PUBLIC_OFFER')}
+          onNavigateToPrivacyPolicy={() => setPublicView('PRIVACY_POLICY')}
           isDarkMode={isDarkMode}
           toggleTheme={toggleTheme}
         />
@@ -126,6 +132,36 @@ const App: React.FC = () => {
           onStart={() => setPublicView('AUTH')}
           onNavigateToPricing={() => setPublicView('PRICING')}
           onNavigateToContacts={() => setPublicView('CONTACTS')}
+          onNavigateToPublicOffer={() => setPublicView('PUBLIC_OFFER')}
+          onNavigateToPrivacyPolicy={() => setPublicView('PRIVACY_POLICY')}
+          isDarkMode={isDarkMode}
+          toggleTheme={toggleTheme}
+        />
+      );
+    }
+    if (publicView === 'PUBLIC_OFFER') {
+      return (
+        <PublicOffer
+          onBack={() => setPublicView('LANDING')}
+          onStart={() => setPublicView('AUTH')}
+          onNavigateToPricing={() => setPublicView('PRICING')}
+          onNavigateToBlog={() => setPublicView('BLOG')}
+          onNavigateToContacts={() => setPublicView('CONTACTS')}
+          onNavigateToPrivacyPolicy={() => setPublicView('PRIVACY_POLICY')}
+          isDarkMode={isDarkMode}
+          toggleTheme={toggleTheme}
+        />
+      );
+    }
+    if (publicView === 'PRIVACY_POLICY') {
+      return (
+        <PrivacyPolicy
+          onBack={() => setPublicView('LANDING')}
+          onStart={() => setPublicView('AUTH')}
+          onNavigateToPricing={() => setPublicView('PRICING')}
+          onNavigateToBlog={() => setPublicView('BLOG')}
+          onNavigateToContacts={() => setPublicView('CONTACTS')}
+          onNavigateToPublicOffer={() => setPublicView('PUBLIC_OFFER')}
           isDarkMode={isDarkMode}
           toggleTheme={toggleTheme}
         />
@@ -137,6 +173,8 @@ const App: React.FC = () => {
         onNavigateToContacts={() => setPublicView('CONTACTS')}
         onNavigateToPricing={() => setPublicView('PRICING')}
         onNavigateToBlog={() => setPublicView('BLOG')}
+        onNavigateToPublicOffer={() => setPublicView('PUBLIC_OFFER')}
+        onNavigateToPrivacyPolicy={() => setPublicView('PRIVACY_POLICY')}
         isDarkMode={isDarkMode}
         toggleTheme={toggleTheme}
       />

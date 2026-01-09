@@ -6,6 +6,8 @@ interface LandingPageProps {
   onNavigateToContacts: () => void;
   onNavigateToPricing: () => void;
   onNavigateToBlog: () => void;
+  onNavigateToPublicOffer: () => void;
+  onNavigateToPrivacyPolicy: () => void;
   isDarkMode: boolean;
   toggleTheme: () => void;
 }
@@ -15,6 +17,8 @@ const LandingPage: React.FC<LandingPageProps> = ({
   onNavigateToContacts, 
   onNavigateToPricing, 
   onNavigateToBlog,
+  onNavigateToPublicOffer,
+  onNavigateToPrivacyPolicy,
   isDarkMode,
   toggleTheme
 }) => {
@@ -368,8 +372,22 @@ const LandingPage: React.FC<LandingPageProps> = ({
             <div>
               <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Документы</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Публичная оферта</a></li>
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Политика конфиденциальности</a></li>
+                <li>
+                  <button 
+                    onClick={onNavigateToPublicOffer}
+                    className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
+                  >
+                    Публичная оферта
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={onNavigateToPrivacyPolicy}
+                    className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
+                  >
+                    Политика конфиденциальности
+                  </button>
+                </li>
                 <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Карта сайта</a></li>
               </ul>
             </div>

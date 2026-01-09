@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Check, X, Zap, Mail, Send, Menu, Sun, Moon } from 'lucide-react';
+import { Mail, Send, Menu, X, Sun, Moon } from 'lucide-react';
 
-interface PricingProps {
+interface PublicOfferProps {
   onBack: () => void;
   onStart: () => void;
   onNavigateToContacts: () => void;
+  onNavigateToPricing: () => void;
   onNavigateToBlog: () => void;
-  onNavigateToPublicOffer: () => void;
   onNavigateToPrivacyPolicy: () => void;
   isDarkMode: boolean;
   toggleTheme: () => void;
 }
 
-const Pricing: React.FC<PricingProps> = ({ 
-  onBack, onStart, onNavigateToContacts, onNavigateToBlog, 
-  onNavigateToPublicOffer, onNavigateToPrivacyPolicy, isDarkMode, toggleTheme 
+const PublicOffer: React.FC<PublicOfferProps> = ({ 
+  onBack, onStart, onNavigateToContacts, onNavigateToPricing, 
+  onNavigateToBlog, onNavigateToPrivacyPolicy, isDarkMode, toggleTheme 
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -77,7 +77,10 @@ const Pricing: React.FC<PricingProps> = ({
               </button>
               <button 
                 className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onNavigateToPricing();
+                }}
               >
                 Цены
               </button>
@@ -118,127 +121,59 @@ const Pricing: React.FC<PricingProps> = ({
 
       {/* Main Content */}
       <main className="pt-32 pb-20 px-4">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
-              Инвестируйте в свою дисциплину
+            <h1 className="text-3xl md:text-5xl font-extrabold mb-6 text-slate-900 dark:text-white">
+              Публичная оферта
             </h1>
-            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Начните бесплатно. Масштабируйтесь, когда будете готовы к профессиональному росту.
+            <p className="text-slate-500 dark:text-slate-400">Последнее обновление: {new Date().toLocaleDateString('ru-RU')}</p>
+          </div>
+
+          <div className="prose prose-lg dark:prose-invert max-w-none bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <p>
+              Настоящий документ является официальным предложением (публичной офертой) сервиса <strong>Get Smart Log</strong> (далее — «Исполнитель») и содержит все существенные условия предоставления услуг любому физическому или юридическому лицу (далее — «Заказчик»).
             </p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Free Plan */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm flex flex-col relative overflow-hidden">
-              <div className="mb-8">
-                <h3 className="text-2xl font-bold mb-2">Старт</h3>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-extrabold">$0</span>
-                  <span className="text-slate-500 dark:text-slate-400">/ навсегда</span>
-                </div>
-                <p className="text-slate-500 dark:text-slate-400 mt-4">
-                  Идеально для знакомства с платформой и первых шагов в системном трейдинге.
-                </p>
-              </div>
+            <h3>1. Общие положения</h3>
+            <p>
+              1.1. В соответствии со статьей 437 Гражданского Кодекса Российской Федерации (ГК РФ) данный документ является публичной офертой. Акцептом оферты является факт регистрации на сайте сервиса или оплата услуг.
+            </p>
+            <p>
+              1.2. Исполнитель оставляет за собой право вносить изменения в настоящую Оферту без предварительного уведомления Заказчика. Новая редакция вступает в силу с момента ее размещения на сайте.
+            </p>
 
-              <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex items-start gap-3">
-                  <Check className="text-blue-500 shrink-0" size={20} />
-                  <span><span className="font-bold">Безлимитное</span> кол-во сделок</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="text-blue-500 shrink-0" size={20} />
-                  <span>Базовый торговый дневник</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="text-blue-500 shrink-0" size={20} />
-                  <span>Калькулятор риска</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="text-blue-500 shrink-0" size={20} />
-                  <span>Дашборд статистики</span>
-                </li>
-                <li className="flex items-start gap-3 text-slate-400">
-                  <X className="shrink-0" size={20} />
-                  <span>Риск-менеджер</span>
-                </li>
-                <li className="flex items-start gap-3 text-slate-400">
-                  <X className="shrink-0" size={20} />
-                  <span>AI Анализ сделок</span>
-                </li>
-                <li className="flex items-start gap-3 text-slate-400">
-                  <X className="shrink-0" size={20} />
-                  <span>Психологическая ИИ поддержка</span>
-                </li>
-                <li className="flex items-start gap-3 text-slate-400">
-                  <X className="shrink-0" size={20} />
-                  <span>Приоритетная поддержка</span>
-                </li>
-              </ul>
+            <h3>2. Предмет оферты</h3>
+            <p>
+              2.1. Исполнитель обязуется предоставить Заказчику доступ к программному обеспечению «Get Smart Log» для ведения торгового дневника и анализа сделок, а Заказчик обязуется оплатить эти услуги в соответствии с выбранным тарифом.
+            </p>
 
-              <button 
-                onClick={onStart}
-                className="w-full py-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 font-bold hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-              >
-                Попробовать бесплатно
-              </button>
-            </div>
+            <h3>3. Права и обязанности сторон</h3>
+            <p>
+              3.1. Исполнитель обязуется обеспечивать работоспособность сервиса 24/7, за исключением времени проведения технических работ.
+            </p>
+            <p>
+              3.2. Заказчик обязуется не использовать сервис для противоправных действий и не передавать доступ к своему аккаунту третьим лицам.
+            </p>
 
-            {/* Pro Plan */}
-            <div className="bg-slate-900 dark:bg-slate-800 rounded-2xl border border-blue-500 p-8 shadow-xl flex flex-col relative overflow-hidden text-white transform md:-translate-y-4">
-              <div className="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
-                РЕКОМЕНДУЕМ
-              </div>
-              
-              <div className="mb-8">
-                <h3 className="text-2xl font-bold mb-2 flex items-center gap-2">
-                  Pro Trader <Zap className="text-yellow-400 fill-yellow-400" size={20} />
-                </h3>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-extrabold">$20</span>
-                  <span className="text-slate-300">/ месяц</span>
-                </div>
-                <p className="text-slate-300 mt-4">
-                  Полный доступ ко всем инструментам для профессиональной торговли без ограничений.
-                </p>
-              </div>
+            <h3>4. Стоимость услуг и порядок расчетов</h3>
+            <p>
+              4.1. Стоимость услуг определяется в соответствии с тарифами, опубликованными на странице «Цены».
+            </p>
+            <p>
+              4.2. Оплата производится в безналичном порядке. Услуга считается оказанной в момент предоставления доступа к расширенному функционалу.
+            </p>
 
-              <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex items-start gap-3">
-                  <div className="bg-blue-500/20 p-1 rounded-full"><Check className="text-blue-400 shrink-0" size={14} /></div>
-                  <span className="font-bold">Все функции тарифа Старт</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="bg-blue-500/20 p-1 rounded-full"><Check className="text-blue-400 shrink-0" size={14} /></div>
-                  <span><span className="text-purple-300 font-bold">Риск-менеджер</span></span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="bg-blue-500/20 p-1 rounded-full"><Check className="text-blue-400 shrink-0" size={14} /></div>
-                  <span><span className="text-purple-300 font-bold">AI Анализ сделок</span></span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="bg-blue-500/20 p-1 rounded-full"><Check className="text-blue-400 shrink-0" size={14} /></div>
-                  <span><span className="text-purple-300 font-bold">Психологическая AI поддержка 24/7</span></span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="bg-blue-500/20 p-1 rounded-full"><Check className="text-blue-400 shrink-0" size={14} /></div>
-                  <span><span className="text-purple-300 font-bold">Приоритетная поддержка</span></span>
-                </li>
-              </ul>
+            <h3>5. Ответственность сторон</h3>
+            <p>
+              5.1. Исполнитель не несет ответственности за финансовые убытки Заказчика, понесенные в результате торговой деятельности. Сервис носит исключительно информационный и аналитический характер.
+            </p>
+            <p>
+              5.2. Заказчик самостоятельно принимает решения о совершении сделок на финансовых рынках.
+            </p>
 
-              <button 
-                onClick={onStart}
-                className="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-900/50 transition-transform hover:scale-[1.02]"
-              >
-                Оформить подписку
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-16 text-center">
-            <p className="text-slate-500 dark:text-slate-400">
-              Остались вопросы? <button onClick={onNavigateToContacts} className="text-blue-600 hover:underline">Свяжитесь с нами</button>
+            <h3>6. Заключительные положения</h3>
+            <p>
+              6.1. Все споры и разногласия решаются путем переговоров. В случае невозможности достижения соглашения спор передается на рассмотрение в суд по месту нахождения Исполнителя.
             </p>
           </div>
         </div>
@@ -271,7 +206,8 @@ const Pricing: React.FC<PricingProps> = ({
                 <li><button onClick={onBack} className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Главная</button></li>
                 <li>
                   <button 
-                    className="text-slate-500 dark:text-slate-400 font-semibold text-blue-600 dark:text-blue-400 cursor-default"
+                    onClick={onNavigateToPricing}
+                    className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
                     Цены
                   </button>
@@ -301,8 +237,7 @@ const Pricing: React.FC<PricingProps> = ({
               <ul className="space-y-3">
                 <li>
                   <button 
-                    onClick={onNavigateToPublicOffer}
-                    className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
+                    className="text-slate-500 dark:text-slate-400 font-semibold text-blue-600 dark:text-blue-400 cursor-default text-left"
                   >
                     Публичная оферта
                   </button>
@@ -348,4 +283,4 @@ const Pricing: React.FC<PricingProps> = ({
   );
 };
 
-export default Pricing;
+export default PublicOffer;

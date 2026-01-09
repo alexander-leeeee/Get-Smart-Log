@@ -18,6 +18,8 @@ interface BlogProps {
   onStart: () => void;
   onNavigateToPricing: () => void;
   onNavigateToContacts: () => void;
+  onNavigateToPublicOffer: () => void;
+  onNavigateToPrivacyPolicy: () => void;
   isDarkMode: boolean;
   toggleTheme: () => void;
 }
@@ -101,7 +103,10 @@ const BLOG_POSTS: BlogPost[] = [
   }
 ];
 
-const Blog: React.FC<BlogProps> = ({ onBack, onStart, onNavigateToPricing, onNavigateToContacts, isDarkMode, toggleTheme }) => {
+const Blog: React.FC<BlogProps> = ({ 
+  onBack, onStart, onNavigateToPricing, onNavigateToContacts, 
+  onNavigateToPublicOffer, onNavigateToPrivacyPolicy, isDarkMode, toggleTheme 
+}) => {
   const [selectedPost, setSelectedPost] = useState<BlogPost | null>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -385,8 +390,22 @@ const Blog: React.FC<BlogProps> = ({ onBack, onStart, onNavigateToPricing, onNav
             <div>
               <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Документы</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Публичная оферта</a></li>
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Политика конфиденциальности</a></li>
+                <li>
+                  <button 
+                    onClick={onNavigateToPublicOffer}
+                    className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
+                  >
+                    Публичная оферта
+                  </button>
+                </li>
+                <li>
+                  <button 
+                    onClick={onNavigateToPrivacyPolicy}
+                    className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
+                  >
+                    Политика конфиденциальности
+                  </button>
+                </li>
                 <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Карта сайта</a></li>
               </ul>
             </div>

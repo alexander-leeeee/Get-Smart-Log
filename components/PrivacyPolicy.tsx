@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
-import { ArrowLeft, Check, X, Zap, Mail, Send, Menu, Sun, Moon } from 'lucide-react';
+import { Mail, Send, Menu, X, Sun, Moon } from 'lucide-react';
 
-interface PricingProps {
+interface PrivacyPolicyProps {
   onBack: () => void;
   onStart: () => void;
   onNavigateToContacts: () => void;
+  onNavigateToPricing: () => void;
   onNavigateToBlog: () => void;
   onNavigateToPublicOffer: () => void;
-  onNavigateToPrivacyPolicy: () => void;
   isDarkMode: boolean;
   toggleTheme: () => void;
 }
 
-const Pricing: React.FC<PricingProps> = ({ 
-  onBack, onStart, onNavigateToContacts, onNavigateToBlog, 
-  onNavigateToPublicOffer, onNavigateToPrivacyPolicy, isDarkMode, toggleTheme 
+const PrivacyPolicy: React.FC<PrivacyPolicyProps> = ({ 
+  onBack, onStart, onNavigateToContacts, onNavigateToPricing, 
+  onNavigateToBlog, onNavigateToPublicOffer, isDarkMode, toggleTheme 
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -77,7 +77,10 @@ const Pricing: React.FC<PricingProps> = ({
               </button>
               <button 
                 className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onNavigateToPricing();
+                }}
               >
                 Цены
               </button>
@@ -118,127 +121,51 @@ const Pricing: React.FC<PricingProps> = ({
 
       {/* Main Content */}
       <main className="pt-32 pb-20 px-4">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
-              Инвестируйте в свою дисциплину
+            <h1 className="text-3xl md:text-5xl font-extrabold mb-6 text-slate-900 dark:text-white">
+              Политика конфиденциальности
             </h1>
-            <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Начните бесплатно. Масштабируйтесь, когда будете готовы к профессиональному росту.
+            <p className="text-slate-500 dark:text-slate-400">Последнее обновление: {new Date().toLocaleDateString('ru-RU')}</p>
+          </div>
+
+          <div className="prose prose-lg dark:prose-invert max-w-none bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <p>
+              Администрация сервиса «Get Smart Log» (далее — «Сервис») с уважением относится к правам посетителей сервиса. Мы безоговорочно признаем важность конфиденциальности личной информации посетителей нашего сервиса.
             </p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {/* Free Plan */}
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm flex flex-col relative overflow-hidden">
-              <div className="mb-8">
-                <h3 className="text-2xl font-bold mb-2">Старт</h3>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-extrabold">$0</span>
-                  <span className="text-slate-500 dark:text-slate-400">/ навсегда</span>
-                </div>
-                <p className="text-slate-500 dark:text-slate-400 mt-4">
-                  Идеально для знакомства с платформой и первых шагов в системном трейдинге.
-                </p>
-              </div>
+            <h3>1. Сбор информации</h3>
+            <p>
+              1.1. Мы собираем только ту персональную информацию, которую вы предоставляете нам добровольно при регистрации: адрес электронной почты, имя пользователя и зашифрованный пароль.
+            </p>
+            <p>
+              1.2. Мы также можем собирать обезличенные данные о посещении сайта (cookie) для улучшения работы сервиса.
+            </p>
 
-              <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex items-start gap-3">
-                  <Check className="text-blue-500 shrink-0" size={20} />
-                  <span><span className="font-bold">Безлимитное</span> кол-во сделок</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="text-blue-500 shrink-0" size={20} />
-                  <span>Базовый торговый дневник</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="text-blue-500 shrink-0" size={20} />
-                  <span>Калькулятор риска</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <Check className="text-blue-500 shrink-0" size={20} />
-                  <span>Дашборд статистики</span>
-                </li>
-                <li className="flex items-start gap-3 text-slate-400">
-                  <X className="shrink-0" size={20} />
-                  <span>Риск-менеджер</span>
-                </li>
-                <li className="flex items-start gap-3 text-slate-400">
-                  <X className="shrink-0" size={20} />
-                  <span>AI Анализ сделок</span>
-                </li>
-                <li className="flex items-start gap-3 text-slate-400">
-                  <X className="shrink-0" size={20} />
-                  <span>Психологическая ИИ поддержка</span>
-                </li>
-                <li className="flex items-start gap-3 text-slate-400">
-                  <X className="shrink-0" size={20} />
-                  <span>Приоритетная поддержка</span>
-                </li>
-              </ul>
+            <h3>2. Использование информации</h3>
+            <p>
+              2.1. Ваша личная информация используется исключительно для обеспечения доступа к функционалу сервиса, восстановления пароля и уведомления о важных обновлениях.
+            </p>
+            <p>
+              2.2. Данные о ваших торговых операциях (журнал сделок) хранятся в защищенном виде и не передаются третьим лицам.
+            </p>
 
-              <button 
-                onClick={onStart}
-                className="w-full py-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 font-bold hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-              >
-                Попробовать бесплатно
-              </button>
-            </div>
+            <h3>3. Защита данных</h3>
+            <p>
+              3.1. Мы принимаем все необходимые организационные и технические меры для защиты персональных данных от неправомерного или случайного доступа.
+            </p>
 
-            {/* Pro Plan */}
-            <div className="bg-slate-900 dark:bg-slate-800 rounded-2xl border border-blue-500 p-8 shadow-xl flex flex-col relative overflow-hidden text-white transform md:-translate-y-4">
-              <div className="absolute top-0 right-0 bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-bl-lg">
-                РЕКОМЕНДУЕМ
-              </div>
-              
-              <div className="mb-8">
-                <h3 className="text-2xl font-bold mb-2 flex items-center gap-2">
-                  Pro Trader <Zap className="text-yellow-400 fill-yellow-400" size={20} />
-                </h3>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-extrabold">$20</span>
-                  <span className="text-slate-300">/ месяц</span>
-                </div>
-                <p className="text-slate-300 mt-4">
-                  Полный доступ ко всем инструментам для профессиональной торговли без ограничений.
-                </p>
-              </div>
+            <h3>4. Передача данных третьим лицам</h3>
+            <p>
+              4.1. Мы не раскрываем вашу личную информацию третьим компаниям, организациям или частным лицам, если это не требуется по закону.
+            </p>
+            <p>
+              4.2. Для обработки платежей могут использоваться сторонние платежные системы, политика конфиденциальности которых может отличаться от нашей.
+            </p>
 
-              <ul className="space-y-4 mb-8 flex-1">
-                <li className="flex items-start gap-3">
-                  <div className="bg-blue-500/20 p-1 rounded-full"><Check className="text-blue-400 shrink-0" size={14} /></div>
-                  <span className="font-bold">Все функции тарифа Старт</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="bg-blue-500/20 p-1 rounded-full"><Check className="text-blue-400 shrink-0" size={14} /></div>
-                  <span><span className="text-purple-300 font-bold">Риск-менеджер</span></span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="bg-blue-500/20 p-1 rounded-full"><Check className="text-blue-400 shrink-0" size={14} /></div>
-                  <span><span className="text-purple-300 font-bold">AI Анализ сделок</span></span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="bg-blue-500/20 p-1 rounded-full"><Check className="text-blue-400 shrink-0" size={14} /></div>
-                  <span><span className="text-purple-300 font-bold">Психологическая AI поддержка 24/7</span></span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="bg-blue-500/20 p-1 rounded-full"><Check className="text-blue-400 shrink-0" size={14} /></div>
-                  <span><span className="text-purple-300 font-bold">Приоритетная поддержка</span></span>
-                </li>
-              </ul>
-
-              <button 
-                onClick={onStart}
-                className="w-full py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-900/50 transition-transform hover:scale-[1.02]"
-              >
-                Оформить подписку
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-16 text-center">
-            <p className="text-slate-500 dark:text-slate-400">
-              Остались вопросы? <button onClick={onNavigateToContacts} className="text-blue-600 hover:underline">Свяжитесь с нами</button>
+            <h3>5. Изменения в политике конфиденциальности</h3>
+            <p>
+              5.1. Мы оставляем за собой право обновлять нашу политику конфиденциальности. Новая версия политики вступает в силу с момента ее размещения.
             </p>
           </div>
         </div>
@@ -271,7 +198,8 @@ const Pricing: React.FC<PricingProps> = ({
                 <li><button onClick={onBack} className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Главная</button></li>
                 <li>
                   <button 
-                    className="text-slate-500 dark:text-slate-400 font-semibold text-blue-600 dark:text-blue-400 cursor-default"
+                    onClick={onNavigateToPricing}
+                    className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
                     Цены
                   </button>
@@ -309,8 +237,7 @@ const Pricing: React.FC<PricingProps> = ({
                 </li>
                 <li>
                   <button 
-                    onClick={onNavigateToPrivacyPolicy}
-                    className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
+                    className="text-slate-500 dark:text-slate-400 font-semibold text-blue-600 dark:text-blue-400 cursor-default text-left"
                   >
                     Политика конфиденциальности
                   </button>
@@ -348,4 +275,4 @@ const Pricing: React.FC<PricingProps> = ({
   );
 };
 
-export default Pricing;
+export default PrivacyPolicy;
