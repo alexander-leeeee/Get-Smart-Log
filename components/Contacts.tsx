@@ -64,7 +64,7 @@ const Contacts: React.FC<ContactsProps> = ({ onBack, onStart, onNavigateToPricin
 
         {/* Full Screen Menu Overlay */}
         {isMenuOpen && (
-          <div className="fixed top-16 left-0 w-full h-[calc(100vh-4rem)] bg-white dark:bg-slate-900 z-40 flex flex-col animate-in slide-in-from-top-5 duration-200 overflow-y-auto">
+          <div className="fixed top-16 left-0 w-full h-[calc(100vh-4rem)] bg-white dark:bg-slate-900 z-40 flex flex-col animate-mobile-menu-slide-down overflow-y-auto">
             <div className="flex flex-col items-center justify-center flex-1 space-y-8 p-8">
               <button 
                 className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
