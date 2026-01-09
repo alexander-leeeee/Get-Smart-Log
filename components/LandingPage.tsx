@@ -6,7 +6,7 @@ interface LandingPageProps {
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200 selection:bg-blue-500 selection:text-white">
@@ -22,7 +22,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               <span className="text-xl font-bold">TradeMind AI</span>
             </div>
 
-            {/* Desktop Menu & Actions */}
+            {/* Actions */}
             <div className="flex items-center gap-4">
               <button
                 onClick={onStart}
@@ -30,39 +30,61 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               >
                 Войти
               </button>
-              <button
-                onClick={onStart}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
-              >
-                Начать
-              </button>
               
               {/* Burger Button */}
               <button 
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
               >
-                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Mobile Menu Dropdown */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-16 left-0 w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 p-4 shadow-lg animate-in slide-in-from-top-2">
-            <div className="flex flex-col space-y-4">
-              <a href="#seo-section" className="text-slate-600 dark:text-slate-300 hover:text-blue-600" onClick={() => setIsMobileMenuOpen(false)}>Преимущества</a>
-              <a href="#features" className="text-slate-600 dark:text-slate-300 hover:text-blue-600" onClick={() => setIsMobileMenuOpen(false)}>Возможности</a>
-              <a href="#faq" className="text-slate-600 dark:text-slate-300 hover:text-blue-600" onClick={() => setIsMobileMenuOpen(false)}>FAQ</a>
-              <button 
+        {/* Full Screen Menu Overlay */}
+        {isMenuOpen && (
+          <div className="fixed top-16 left-0 w-full h-[calc(100vh-4rem)] bg-white dark:bg-slate-900 z-40 flex flex-col animate-in slide-in-from-top-5 duration-200 overflow-y-auto">
+            <div className="flex flex-col items-center justify-center flex-1 space-y-8 p-8">
+              <a 
+                href="#" 
+                className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Главная
+              </a>
+              <a 
+                href="#" 
+                className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Цены
+              </a>
+              <a 
+                href="#" 
+                className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Блог
+              </a>
+              <a 
+                href="#" 
+                className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Контакты
+              </a>
+            </div>
+            
+            <div className="p-8 border-t border-slate-100 dark:border-slate-800">
+               <button 
                 onClick={() => {
                   onStart();
-                  setIsMobileMenuOpen(false);
+                  setIsMenuOpen(false);
                 }}
-                className="w-full text-center py-3 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white font-medium"
+                className="w-full max-w-md mx-auto block py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-lg shadow-lg shadow-blue-600/20 transition-all hover:scale-[1.02]"
               >
-                Войти в аккаунт
+                Войти в кабинет
               </button>
             </div>
           </div>
