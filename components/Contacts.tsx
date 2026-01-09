@@ -67,7 +67,7 @@ const Contacts: React.FC<ContactsProps> = ({ onBack, onStart, onNavigateToPricin
           <div className="fixed top-16 left-0 w-full h-[calc(100vh-4rem)] bg-white dark:bg-slate-900 z-40 flex flex-col animate-in slide-in-from-top-5 duration-200 overflow-y-auto">
             <div className="flex flex-col items-center justify-center flex-1 space-y-8 p-8">
               <button 
-                className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
+                className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
                 onClick={() => {
                   setIsMenuOpen(false);
                   onBack();
@@ -76,7 +76,7 @@ const Contacts: React.FC<ContactsProps> = ({ onBack, onStart, onNavigateToPricin
                 Главная
               </button>
               <button 
-                className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
+                className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
                 onClick={() => {
                   setIsMenuOpen(false);
                   onNavigateToPricing();
@@ -85,7 +85,7 @@ const Contacts: React.FC<ContactsProps> = ({ onBack, onStart, onNavigateToPricin
                 Цены
               </button>
               <button 
-                className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
+                className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
                 onClick={() => {
                   setIsMenuOpen(false);
                   onNavigateToBlog();
@@ -94,7 +94,7 @@ const Contacts: React.FC<ContactsProps> = ({ onBack, onStart, onNavigateToPricin
                 Блог
               </button>
               <button 
-                className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
+                className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
                 onClick={() => setIsMenuOpen(false)}
               >
                 Контакты
@@ -141,8 +141,8 @@ const Contacts: React.FC<ContactsProps> = ({ onBack, onStart, onNavigateToPricin
                     </div>
                     <div>
                       <p className="font-semibold text-lg mb-1">Email</p>
-                      <a href="mailto:support@getsmartlog.com" className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        support@getsmartlog.com
+                      <a href="mailto:support@getsmartlog.trade" className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        support@getsmartlog.trade
                       </a>
                       <p className="text-sm text-slate-500 mt-1">Для общих вопросов и поддержки</p>
                     </div>
@@ -310,7 +310,7 @@ const Contacts: React.FC<ContactsProps> = ({ onBack, onStart, onNavigateToPricin
               <ul className="space-y-3">
                 <li className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
                   <Mail size={16} className="text-blue-500" />
-                  <a href="mailto:support@getsmartlog.com" className="hover:text-blue-600 transition-colors">support@getsmartlog.com</a>
+                  <a href="mailto:support@getsmartlog.trade" className="hover:text-blue-600 transition-colors">support@getsmartlog.trade</a>
                 </li>
                 <li className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
                   <Send size={16} className="text-blue-500" />

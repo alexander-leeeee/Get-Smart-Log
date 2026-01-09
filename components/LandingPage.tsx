@@ -71,13 +71,13 @@ const LandingPage: React.FC<LandingPageProps> = ({
             <div className="flex flex-col items-center justify-center flex-1 space-y-8 p-8">
               <a 
                 href="#" 
-                className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
+                className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
                 onClick={() => setIsMenuOpen(false)}
               >
                 Главная
               </a>
               <button 
-                className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
+                className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
                 onClick={() => {
                   setIsMenuOpen(false);
                   onNavigateToPricing();
@@ -86,7 +86,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
                 Цены
               </button>
               <button 
-                className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
+                className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
                 onClick={() => {
                   setIsMenuOpen(false);
                   onNavigateToBlog();
@@ -95,7 +95,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
                 Блог
               </button>
               <button 
-                className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
+                className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
                 onClick={() => {
                   setIsMenuOpen(false);
                   onNavigateToContacts();
@@ -125,7 +125,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
         <div className="max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-8">
             <TrendingUp size={16} />
-            <span>AI-Powered Trading Companion</span>
+            <span>AI Торговый Ассистент</span>
           </div>
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
             Торгуйте разумно <br /> с поддержкой ИИ
@@ -380,7 +380,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
               <ul className="space-y-3">
                 <li className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
                   <Mail size={16} className="text-blue-500" />
-                  <a href="mailto:support@getsmartlog.com" className="hover:text-blue-600 transition-colors">support@getsmartlog.com</a>
+                  <a href="mailto:support@getsmartlog.trade" className="hover:text-blue-600 transition-colors">support@getsmartlog.trade</a>
                 </li>
                 <li className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
                   <Send size={16} className="text-blue-500" />
