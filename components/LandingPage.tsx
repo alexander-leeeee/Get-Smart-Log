@@ -3,9 +3,11 @@ import { LayoutDashboard, BookOpen, Calculator, BrainCircuit, ArrowRight, CheckC
 
 interface LandingPageProps {
   onStart: () => void;
+  onNavigateToContacts: () => void;
+  onNavigateToPricing: () => void;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ onStart, onNavigateToContacts, onNavigateToPricing }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
@@ -55,13 +57,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               >
                 Главная
               </a>
-              <a 
-                href="#" 
+              <button 
                 className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onNavigateToPricing();
+                }}
               >
                 Цены
-              </a>
+              </button>
               <a 
                 href="#" 
                 className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
@@ -69,13 +73,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               >
                 Блог
               </a>
-              <a 
-                href="#" 
+              <button 
                 className="text-3xl md:text-4xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
-                onClick={() => setIsMenuOpen(false)}
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  onNavigateToContacts();
+                }}
               >
                 Контакты
-              </a>
+              </button>
             </div>
             
             <div className="p-8 border-t border-slate-100 dark:border-slate-800">
@@ -310,8 +316,23 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => {
               <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Меню</h3>
               <ul className="space-y-3">
                 <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Главная</a></li>
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Цены</a></li>
+                <li>
+                  <button 
+                    onClick={onNavigateToPricing}
+                    className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
+                  >
+                    Цены
+                  </button>
+                </li>
                 <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Блог</a></li>
+                <li>
+                  <button 
+                    onClick={onNavigateToContacts}
+                    className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
+                  >
+                    Контакты
+                  </button>
+                </li>
               </ul>
             </div>
 

@@ -9,12 +9,16 @@ import AIAnalyzer from './components/AIAnalyzer';
 import Settings from './components/Settings';
 import HomePage from './components/HomePage';
 import LandingPage from './components/LandingPage';
+import Contacts from './components/Contacts';
+import Pricing from './components/Pricing';
 import { Home, LayoutDashboard, BookOpen, Calculator, BrainCircuit } from 'lucide-react';
+
+type PublicViewState = 'LANDING' | 'AUTH' | 'CONTACTS' | 'PRICING';
 
 const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [currentView, setCurrentView] = useState<ViewState>('HOME');
-  const [showAuth, setShowAuth] = useState(false); // State to toggle between Landing and Auth
+  const [publicView, setPublicView] = useState<PublicViewState>('LANDING');
 
   // Default to dark theme, but check local storage
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -76,21 +80,33 @@ const App: React.FC = () => {
     setUser(newUser);
     localStorage.setItem('tm_user', JSON.stringify(newUser));
     setCurrentView('HOME'); // Navigate to internal home on login
-    setShowAuth(false);
+    setPublicView('LANDING'); // Reset public view
   };
 
   const handleLogout = () => {
     setUser(null);
     localStorage.removeItem('tm_user');
-    setShowAuth(false); // Reset to Landing Page
+    setPublicView('LANDING'); // Reset to Landing Page
   };
 
-  // If user is not logged in, show Landing Page or Auth
+  // If user is not logged in, show Landing Page, Auth, Contacts or Pricing
   if (!user) {
-    if (showAuth) {
-      return <Auth onLogin={handleLogin} onBack={() => setShowAuth(false)} />;
+    if (publicView === 'AUTH') {
+      return <Auth onLogin={handleLogin} onBack={() => setPublicView('LANDING')} />;
     }
-    return <LandingPage onStart={() => setShowAuth(true)} />;
+    if (publicView === 'CONTACTS') {
+      return <Contacts onBack={() => setPublicView('LANDING')} />;
+    }
+    if (publicView === 'PRICING') {
+      return <Pricing onBack={() => setPublicView('LANDING')} onStart={() => setPublicView('AUTH')} />;
+    }
+    return (
+      <LandingPage 
+        onStart={() => setPublicView('AUTH')} 
+        onNavigateToContacts={() => setPublicView('CONTACTS')}
+        onNavigateToPricing={() => setPublicView('PRICING')}
+      />
+    );
   }
 
   // Authenticated View
