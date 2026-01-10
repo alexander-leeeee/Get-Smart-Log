@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Trade, TradeDirection } from '../types';
-import { Trash2, Wand2, BrainCircuit, FileText, Save, X } from 'lucide-react';
+import { Trash2, Wand2, BrainCircuit, FileText, Save, X, UploadCloud } from 'lucide-react';
 import { analyzeTradeWithAI } from '../services/geminiService';
 
 interface JournalProps {
@@ -55,6 +55,10 @@ const Journal: React.FC<JournalProps> = ({ trades, setTrades }) => {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Торговый Дневник</h2>
+        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all hover:scale-105 shadow-sm active:scale-95">
+            <UploadCloud size={20} />
+            <span className="font-medium text-sm hidden sm:inline">Загрузить историю сделок</span>
+        </button>        
       </div>
 
       {/* Trades List */}
