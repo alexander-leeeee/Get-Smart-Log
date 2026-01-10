@@ -91,6 +91,14 @@ const App: React.FC = () => {
     localStorage.setItem('tm_lang', lang);
   };
 
+  const handleToggleLanguage = () => {
+    setLanguage(prev => {
+      const next = prev === 'ru' ? 'ua' : prev === 'ua' ? 'en' : 'ru';
+      localStorage.setItem('tm_lang', next);
+      return next;
+    });
+  };
+
   const handleLogin = (newUser: User) => {
     setUser(newUser);
     localStorage.setItem('tm_user', JSON.stringify(newUser));
