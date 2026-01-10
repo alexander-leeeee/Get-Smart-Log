@@ -23,8 +23,9 @@ export default async function handler(req: any, res: any) {
     `;
 
     return res.status(200).json({ success: true, message: 'Ключи сохранены' });
-  } catch (error: any) {
-    console.error(error);
-    return res.status(500).json({ error: 'Ошибка базы данных' });
-  }
+    } catch (error: any) {
+      console.error(error);
+      // Возвращаем реальный текст ошибки от Neon (например: column "exchange_name" does not exist)
+      return res.status(500).json({ error: error.message });
+    }
 }
