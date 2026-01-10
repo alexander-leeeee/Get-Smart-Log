@@ -36,31 +36,8 @@ const App: React.FC = () => {
      return (savedLang === 'en' || savedLang === 'ua' || savedLang === 'ru') ? (savedLang as Language) : 'ru';
   });
   
-  // Initialize with some dummy data for demonstration
-  const [trades, setTrades] = useState<Trade[]>([
-    {
-      id: '1',
-      symbol: 'BTCUSDT',
-      entryPrice: 62000,
-      exitPrice: 64500,
-      size: 0.1,
-      direction: TradeDirection.LONG,
-      date: '2023-10-15',
-      notes: 'Пробой уровня сопротивления. Хороший объем.',
-      pnl: 250
-    },
-    {
-      id: '2',
-      symbol: 'ETHUSDT',
-      entryPrice: 3400,
-      exitPrice: 3350,
-      size: 1.5,
-      direction: TradeDirection.LONG,
-      date: '2023-10-16',
-      notes: 'Ложный пробой, вышел по стопу.',
-      pnl: -75
-    }
-  ]);
+  // Initialize with empty array
+  const [trades, setTrades] = useState<Trade[]>([]);
 
   // Check for persisted user session (mock)
   useEffect(() => {
