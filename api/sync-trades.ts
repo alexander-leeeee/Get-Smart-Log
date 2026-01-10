@@ -3,57 +3,43 @@ import ccxt from 'ccxt';
 
 export default async function handler(req: any, res: any) {
   const sql = neon(process.env.DATABASE_URL!);
-  
-  // Получаем userId из запроса (его должен прислать фронтенд)
-  const { userId } = req.body;
-
-  if (!userId) return res.status(400).json({ error: 'Укажите ID пользователя' });
+  const { userId, connectionId, loadHistory } = req.body; 
 
   try {
-    // 1. Достаем ключи именно из вашей новой таблицы api_keys
-    const keys = await sql`
-      SELECT api_key, api_secret FROM api_keys 
-      WHERE user_id = ${userId} AND exchange_name = 'binance' 
-      LIMIT 1
+    // Ищем конкретные ключи по ID подключения
+    const connection = await sql`
+      SELECT api_key, api_secret, exchange_name 
+      FROM api_keys 
+      WHERE id = ${connectionId} AND user_id = ${userId}
     `;
 
-    if (keys.length === 0) return res.status(404).json({ error: 'API ключи не найдены' });
+    if (connection.length === 0) return res.status(404).json({ error: 'Подключение не найдено' });
 
-    // 2. Подключаемся к Binance
-    const exchange = new ccxt.binance({
-      apiKey: keys[0].api_key,
-      secret: keys[0].api_secret,
+    const { api_key, api_secret, exchange_name } = connection[0];
+
+    // Динамически выбираем биржу (binance, bybit и т.д.) через CCXT
+    const exchange = new (ccxt as any)[exchange_name]({
+      apiKey: api_key,
+      secret: api_secret,
     });
 
-    // 3. Загружаем сделки (fetchMyTrades вытягивает историю)
-    // Можно добавить параметры, например символ или лимит
-    const trades = await exchange.fetchMyTrades();
+    const since = loadHistory ? undefined : Date.now() - 24 * 60 * 60 * 1000;
+    const trades = await exchange.fetchMyTrades(undefined, since);
 
-    // 4. Сохраняем в таблицу trades
     for (const trade of trades) {
       await sql`
-        INSERT INTO trades (user_id, symbol, side, price, amount, timestamp, external_id)
+        INSERT INTO trades (user_id, symbol, side, price, amount, timestamp, external_id, exchange_name)
         VALUES (
-          ${userId}, 
-          ${trade.symbol}, 
-          ${trade.side}, 
-          ${trade.price}, 
-          ${trade.amount}, 
-          ${new Date(trade.timestamp).toISOString()},
-          ${trade.id} -- external_id нужен, чтобы не было дубликатов
+          ${userId}, ${trade.symbol}, ${trade.side}, ${trade.price}, 
+          ${trade.amount}, ${new Date(trade.timestamp).toISOString()}, 
+          ${trade.id}, ${exchange_name}
         )
         ON CONFLICT (external_id) DO NOTHING
       `;
     }
 
-    return res.status(200).json({ 
-      success: true, 
-      count: trades.length,
-      message: `Синхронизировано ${trades.length} сделок` 
-    });
-
+    return res.status(200).json({ message: `С биржи ${exchange_name} загружено ${trades.length} сделок` });
   } catch (error: any) {
-    console.error('Ошибка Binance API:', error);
-    return res.status(500).json({ error: 'Ошибка синхронизации: ' + error.message });
+    return res.status(500).json({ error: error.message });
   }
 }
