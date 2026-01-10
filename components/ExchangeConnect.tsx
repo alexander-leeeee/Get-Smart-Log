@@ -6,9 +6,10 @@ import { Plus, Trash2, Key, ShieldCheck, AlertCircle } from 'lucide-react';
 
 interface ExchangeConnectProps {
   language: Language;
+  user: User;
 }
 
-const ExchangeConnect: React.FC<ExchangeConnectProps> = ({ language }) => {
+const ExchangeConnect: React.FC<ExchangeConnectProps> = ({ language, user }) => {
   const t = translations[language].exchange;
   const [connections, setConnections] = useState<ExchangeConnection[]>([]);
   const [form, setForm] = useState({
@@ -35,20 +36,66 @@ const ExchangeConnect: React.FC<ExchangeConnectProps> = ({ language }) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleAdd = (e: React.FormEvent) => {
+const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.apiKey || !form.secretKey) return;
 
-    const newConnection: ExchangeConnection = {
-      id: Date.now().toString(),
-      exchange: form.exchange as any,
-      name: form.name || form.exchange,
-      apiKey: form.apiKey,
-      createdAt: new Date().toISOString().split('T')[0]
-    };
+    try {
+      // 1. Сохраняем ключи в базу данных Neon
+      const response = await fetch('/api/save-keys', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id, // Реальный ID из системы входа
+          apiKey: form.apiKey,
+          apiSecret: form.secretKey,
+          label: form.name || form.exchange
+        }),
+      });
 
-    setConnections(prev => [...prev, newConnection]);
-    setForm({ exchange: 'Binance', name: '', apiKey: '', secretKey: '' });
+      if (response.ok) {
+        // 2. Если в базу сохранилось, обновляем список на экране
+        const newConnection: ExchangeConnection = {
+          id: Date.now().toString(),
+          exchange: form.exchange as any,
+          name: form.name || form.exchange,
+          apiKey: form.apiKey,
+          createdAt: new Date().toISOString().split('T')[0]
+        };
+
+        const updated = [...connections, newConnection];
+        setConnections(updated);
+        localStorage.setItem('tm_exchange_connections', JSON.stringify(updated));
+        setForm({ exchange: 'Binance', name: '', apiKey: '', secretKey: '' });
+        alert('Биржа успешно подключена к вашему аккаунту в базе!');
+      } else {
+        const errorData = await response.json();
+        alert('Ошибка базы: ' + errorData.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Ошибка при сохранении ключей');
+    }
+  };
+
+  const handleSyncHistory = async () => {
+    setIsSyncing(true);
+    try {
+      const response = await fetch('/api/sync-trades', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          userId: user.id, 
+          loadHistory: true 
+        }),
+      });
+      const data = await response.json();
+      alert(response.ok ? `Успешно! ${data.message}` : `Ошибка: ${data.error}`);
+    } catch (err) {
+      alert('Ошибка связи с сервером');
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
   const handleDelete = (id: string) => {
