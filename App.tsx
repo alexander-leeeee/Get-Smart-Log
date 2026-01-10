@@ -128,7 +128,8 @@ const App: React.FC = () => {
       isDarkMode,
       toggleTheme,
       language,
-      setLanguage: handleSetLanguage
+      setLanguage: handleSetLanguage,
+      toggleLanguage: handleToggleLanguage
     };
 
     if (publicView === 'CONTACTS') return <Contacts {...publicProps} />;
@@ -149,6 +150,7 @@ const App: React.FC = () => {
         toggleTheme={toggleTheme}
         language={language}
         setLanguage={handleSetLanguage}
+        toggleLanguage={handleToggleLanguage}
       />
     );
   }
