@@ -123,7 +123,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
         {/* Full Screen Menu Overlay */}
         {isMenuOpen && (
           <div className="fixed top-16 left-0 w-full h-[calc(100vh-4rem)] bg-white dark:bg-slate-900 z-40 flex flex-col animate-mobile-menu-slide-down overflow-y-auto">
-            <div className="flex flex-col items-center justify-center flex-1 space-y-8 p-8">
+            <div className="flex flex-col items-center justify-center flex-1 gap-8 p-8">
               <a 
                 href="#" 
                 className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
