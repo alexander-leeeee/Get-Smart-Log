@@ -355,7 +355,7 @@ const Blog: React.FC<BlogProps> = ({
         {isMenuOpen && (
           <div className="fixed top-16 left-0 w-full h-[calc(100vh-4rem)] bg-white dark:bg-slate-900 z-40 flex flex-col animate-mobile-menu-slide-down overflow-y-auto">
              {/* ... Mobile Menu Items using t.nav ... */}
-            <div className="flex flex-col items-center justify-center flex-1 gap-8 p-4">
+            <div className="flex flex-col items-center justify-center flex-1 space-y-8 p-8">
               <button onClick={() => { setIsMenuOpen(false); onBack(); }} className="text-2xl font-bold hover:text-blue-600 dark:hover:text-blue-400">{t.nav.home}</button>
               <button onClick={() => { setIsMenuOpen(false); onNavigateToPricing(); }} className="text-2xl font-bold hover:text-blue-600 dark:hover:text-blue-400">{t.nav.pricing}</button>
               <button onClick={() => setIsMenuOpen(false)} className="text-2xl font-bold hover:text-blue-600 dark:hover:text-blue-400">{t.nav.blog}</button>
