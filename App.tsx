@@ -171,7 +171,7 @@ const App: React.FC = () => {
         {currentView === 'JOURNAL' && <Journal trades={trades} setTrades={setTrades} />}
         {currentView === 'RISK_CALC' && <RiskManager />}
         {currentView === 'AI_ANALYSIS' && <AIAnalyzer />}
-        {currentView === 'EXCHANGE_CONNECT' && <ExchangeConnect language={language} />}
+        {currentView === 'EXCHANGE_CONNECT' && <ExchangeConnect language={language} user={user} />}
         {currentView === 'SETTINGS' && <Settings user={user} />}
       </main>
 
