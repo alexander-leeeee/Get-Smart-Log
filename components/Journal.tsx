@@ -58,7 +58,7 @@ const Journal: React.FC<JournalProps> = ({ trades, setTrades }) => {
         <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all hover:scale-105 shadow-sm active:scale-95">
             <UploadCloud size={20} />
             <span className="font-medium text-sm hidden sm:inline">Загрузить историю сделок</span>
-        </button>        
+        </button>
       </div>
 
       {/* Trades List */}
