@@ -73,6 +73,7 @@ const Journal: React.FC<JournalProps> = ({ trades, setTrades }) => {
                 <th className="p-4">Вход</th>
                 <th className="p-4">Выход</th>
                 <th className="p-4">Объем</th>
+                <th className="p-4">Комиссия</th>
                 <th className="p-4">PnL</th>
                 <th className="p-4 text-right">Действия</th>
               </tr>
@@ -80,7 +81,7 @@ const Journal: React.FC<JournalProps> = ({ trades, setTrades }) => {
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {trades.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="p-8 text-center text-slate-500">
+                  <td colSpan={9} className="p-8 text-center text-slate-500">
                     Сделок пока нет. Подключите биржу в разделе "API Ключи" для автоматической синхронизации.
                   </td>
                 </tr>
@@ -108,6 +109,9 @@ const Journal: React.FC<JournalProps> = ({ trades, setTrades }) => {
                       <td className="p-4 text-slate-700 dark:text-slate-300">{trade.entryPrice}</td>
                       <td className="p-4 text-slate-700 dark:text-slate-300">{trade.exitPrice}</td>
                       <td className="p-4 text-slate-700 dark:text-slate-300">{trade.size}</td>
+                      <td className="p-4 text-slate-500 dark:text-slate-400 text-xs">
+                         {trade.fees ? `-${trade.fees.toFixed(2)} $` : '0.00 $'}
+                      </td>
                       <td className={`p-4 font-mono font-bold ${trade.pnl >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                         {trade.pnl >= 0 ? '+' : ''}{trade.pnl.toFixed(2)} $
                       </td>
@@ -146,7 +150,7 @@ const Journal: React.FC<JournalProps> = ({ trades, setTrades }) => {
                     {/* Note Editor Row */}
                     {editingNoteId === trade.id && (
                       <tr className="bg-blue-50 dark:bg-blue-900/10 animate-in fade-in slide-in-from-top-2">
-                        <td colSpan={8} className="p-4">
+                        <td colSpan={9} className="p-4">
                           <div className="bg-white dark:bg-slate-950 p-4 rounded-lg border border-blue-200 dark:border-blue-500/30">
                             <h4 className="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                               <FileText size={16} className="text-blue-500" /> 
@@ -180,7 +184,7 @@ const Journal: React.FC<JournalProps> = ({ trades, setTrades }) => {
                     {/* AI Analysis Row */}
                     {analysisResult?.id === trade.id && (
                        <tr className="bg-purple-50 dark:bg-purple-900/10 animate-in fade-in slide-in-from-top-2">
-                        <td colSpan={8} className="p-4">
+                        <td colSpan={9} className="p-4">
                           <div className="bg-white dark:bg-slate-950 p-4 rounded-lg border border-purple-200 dark:border-purple-500/30">
                             <h4 className="flex items-center gap-2 text-purple-700 dark:text-purple-300 font-bold mb-2">
                               <BrainCircuit size={16} /> Анализ ИИ:
