@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, BookOpen, Calculator, BrainCircuit, LogOut, Settings, Moon, Sun, Home, Languages } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Calculator, BrainCircuit, LogOut, Settings, Moon, Sun, Home, Languages, Link2 } from 'lucide-react';
 import { ViewState, Language } from '../types';
 import { translations } from '../utils/translations';
 
@@ -22,6 +22,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, onLogout, 
     { id: 'JOURNAL' as ViewState, label: t.journal, icon: BookOpen },
     { id: 'RISK_CALC' as ViewState, label: t.risk, icon: Calculator },
     { id: 'AI_ANALYSIS' as ViewState, label: t.ai, icon: BrainCircuit },
+    { id: 'EXCHANGE_CONNECT' as ViewState, label: t.api, icon: Link2 },
   ];
 
   return (
