@@ -172,15 +172,13 @@ const Pricing: React.FC<PricingProps> = ({
                     <span>{feature}</span>
                   </li>
                 ))}
-                {/* Visual filler for missing features */}
-                <li className="flex items-start gap-3 text-slate-400">
-                  <X className="shrink-0" size={20} />
-                  <span>{language === 'en' ? 'Risk Manager' : language === 'ua' ? 'Ризик-менеджер' : 'Риск-менеджер'}</span>
-                </li>
-                <li className="flex items-start gap-3 text-slate-400">
-                  <X className="shrink-0" size={20} />
-                  <span>{language === 'en' ? 'AI Trade Analysis' : language === 'ua' ? 'ШІ Аналіз угод' : 'AI Анализ сделок'}</span>
-                </li>
+                {/* Dynamically render unavailable features */}
+                {t.pricing.start.unavailable && t.pricing.start.unavailable.map((feature, i) => (
+                  <li key={`unavailable-${i}`} className="flex items-start gap-3 text-slate-400">
+                    <X className="shrink-0" size={20} />
+                    <span>{feature}</span>
+                  </li>
+                ))}
               </ul>
 
               <button 

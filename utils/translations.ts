@@ -47,6 +47,7 @@ export const translations = {
       seoList1: "Глубокая аналитика каждой сделки для понимания ваших сильных сторон.",
       seoList2: "Интеграция с искусственным интеллектом Gemini для второго мнения.",
       seoList3: "Полная конфиденциальность ваших данных и безопасность стратегий.",
+      aiAssistant: "ИИ Торговый Ассистент",
       features: {
         journal: { title: "Торговый Дневник", desc: "Записывайте каждую сделку. Анализируйте входы и выходы." },
         risk: { title: "Риск-Менеджер", desc: "Контролируйте риски и сохраняйте депозит с умным калькулятором." },
@@ -70,6 +71,12 @@ export const translations = {
           "Базовый торговый дневник",
           "Калькулятор риска",
           "Дашборд статистики"
+        ],
+        unavailable: [
+          "Риск-менеджер",
+          "AI Анализ сделок",
+          "Психологическая AI поддержка",
+          "Приоритетная поддержка"
         ]
       },
       pro: {
@@ -147,6 +154,7 @@ export const translations = {
       seoList1: "Deep analytics of every trade to understand your strengths.",
       seoList2: "Integration with Gemini AI for a second opinion.",
       seoList3: "Complete data privacy and strategy security.",
+      aiAssistant: "AI Trading Assistant",
       features: {
         journal: { title: "Trading Journal", desc: "Record every trade. Analyze entries and exits." },
         risk: { title: "Risk Manager", desc: "Control risks and preserve capital with our smart calculator." },
@@ -170,6 +178,12 @@ export const translations = {
           "Basic trading journal",
           "Risk calculator",
           "Statistics dashboard"
+        ],
+        unavailable: [
+          "Risk Manager",
+          "AI Trade Analysis",
+          "AI Psychology Support",
+          "Priority Support"
         ]
       },
       pro: {
@@ -241,12 +255,13 @@ export const translations = {
     },
     landing: {
       heroTitle: "Торгуйте розумно \n з підтримкою ШІ",
-      heroSubtitle: "Ваш персональний торговий хаб: професійний щоденник, розумний ризик-менеджмент та аналіз угод за допомогою Gemini AI.",
+      heroSubtitle: "Ваш персональный торговий хаб: професійний щоденник, розумний ризик-менеджмент та аналіз угод за допомогою Gemini AI.",
       seoTitle: "Систематизуйте успіх з передовими інструментами",
       seoText: "Get Smart Log — це не просто журнал угод, це комплексна екосистема для трейдерів будь-якого рівня. Наша платформа допомагає виявляти патерни у вашій поведінці.",
       seoList1: "Глибока аналітика кожної угоди для розуміння ваших сильних сторін.",
       seoList2: "Інтеграція зі штучним інтелектом Gemini для другої думки.",
       seoList3: "Повна конфіденційність ваших даних та безпека стратегій.",
+      aiAssistant: "ШІ Торговий Асистент",
       features: {
         journal: { title: "Торговий Щоденник", desc: "Записуйте кожну угоду. Аналізуйте входи та виходи." },
         risk: { title: "Ризик-Менеджер", desc: "Контролюйте ризики та зберігайте депозит з розумним калькулятором." },
@@ -270,6 +285,12 @@ export const translations = {
           "Базовий торговий щоденник",
           "Калькулятор ризику",
           "Дашборд статистики"
+        ],
+        unavailable: [
+          "Ризик-менеджер",
+          "ШІ Аналіз угод",
+          "Психологічна ШІ підтримка",
+          "Пріоритетна підтримка"
         ]
       },
       pro: {
