@@ -182,7 +182,16 @@ const LandingPage: React.FC<LandingPageProps> = ({
             <TrendingUp size={16} />
             <span>{t.landing.aiAssistant}</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 whitespace-pre-line">
+          <h1 
+            className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 whitespace-pre-line"
+            style={{ 
+              backgroundImage: 'linear-gradient(to right, #2563eb, #4f46e5)', // Цвета from-blue-600 и to-indigo-600
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              color: 'transparent'
+            }}
+          >
             {t.landing.heroTitle}
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
