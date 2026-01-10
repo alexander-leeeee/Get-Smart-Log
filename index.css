@@ -1,4 +1,5 @@
-@theme {
-  /* здесь можно настраивать тему, если нужно */
-}
 @import "tailwindcss";
+
+/* Это принудительно укажет Tailwind, где искать классы */
+@source "../index.html";
+@source "./**/*.{js,ts,jsx,tsx}";
