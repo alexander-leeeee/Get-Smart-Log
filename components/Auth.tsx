@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { User } from '../types';
 import { Lock, User as UserIcon, Mail, ArrowRight, ArrowLeft } from 'lucide-react';
-import logoGsl from '../public/logo-gsl.png';
 
 interface AuthProps {
   onLogin: (user: User) => void;
@@ -38,7 +37,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onBack }) => {
 
         <div className="text-center mb-8 mt-4">
           <img 
-            src={logoGsl} 
+            src="/logo-gsl.png" 
             alt="GSL Logo" 
             className="h-16 w-auto mx-auto mb-4 rounded-xl" 
           />
