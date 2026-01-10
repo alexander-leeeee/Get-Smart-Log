@@ -13,14 +13,38 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onBack }) => {
   const [password, setPassword] = useState('');
   const [username, setUsername] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate authentication
-    if (email && password) {
-      onLogin({
-        username: username || email.split('@')[0],
-        isAuthenticated: true
+    
+    // Выбираем куда слать данные: на вход или на регистрацию
+    const endpoint = isLogin ? '/api/login' : '/api/register';
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          password,
+          name: username || email.split('@')[0]
+        }),
       });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Если всё успешно, логиним пользователя данными из базы
+        onLogin({
+          username: data.user?.name || username || email.split('@')[0],
+          isAuthenticated: true
+        });
+      } else {
+        // Если база вернула ошибку (например, такой email уже есть)
+        alert(data.error || 'Ошибка доступа');
+      }
+    } catch (err) {
+      console.error('Ошибка:', err);
+      alert('Ошибка соединения с сервером');
     }
   };
 
