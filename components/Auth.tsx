@@ -37,7 +37,7 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onBack }) => {
 
         <div className="text-center mb-8 mt-4">
           <img 
-            src="https://placehold.co/100x100/2563eb/ffffff?text=GSL" 
+            src="/logo-gsl.png" 
             alt="GSL Logo" 
             className="h-16 w-auto mx-auto mb-4 rounded-xl" 
           />
