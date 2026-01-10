@@ -6,6 +6,7 @@ import Dashboard from './components/Dashboard';
 import Journal from './components/Journal';
 import RiskManager from './components/RiskManager';
 import AIAnalyzer from './components/AIAnalyzer';
+import ExchangeConnect from './components/ExchangeConnect';
 import Settings from './components/Settings';
 import HomePage from './components/HomePage';
 import LandingPage from './components/LandingPage';
@@ -14,7 +15,7 @@ import Pricing from './components/Pricing';
 import Blog from './components/Blog';
 import PublicOffer from './components/PublicOffer';
 import PrivacyPolicy from './components/PrivacyPolicy';
-import { Home, LayoutDashboard, BookOpen, Calculator, BrainCircuit } from 'lucide-react';
+import { Home, LayoutDashboard, BookOpen, Calculator, BrainCircuit, Link2 } from 'lucide-react';
 
 type PublicViewState = 'LANDING' | 'AUTH' | 'CONTACTS' | 'PRICING' | 'BLOG' | 'PUBLIC_OFFER' | 'PRIVACY_POLICY';
 
@@ -183,6 +184,7 @@ const App: React.FC = () => {
         {currentView === 'JOURNAL' && <Journal trades={trades} setTrades={setTrades} />}
         {currentView === 'RISK_CALC' && <RiskManager />}
         {currentView === 'AI_ANALYSIS' && <AIAnalyzer />}
+        {currentView === 'EXCHANGE_CONNECT' && <ExchangeConnect language={language} />}
         {currentView === 'SETTINGS' && <Settings user={user} />}
       </main>
 
@@ -202,6 +204,9 @@ const App: React.FC = () => {
          </button>
          <button onClick={() => setCurrentView('AI_ANALYSIS')} className={`p-2 rounded ${currentView === 'AI_ANALYSIS' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-500'}`}>
            <BrainCircuit size={20} />
+         </button>
+         <button onClick={() => setCurrentView('EXCHANGE_CONNECT')} className={`p-2 rounded ${currentView === 'EXCHANGE_CONNECT' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-500'}`}>
+           <Link2 size={20} />
          </button>
        </div>
     </div>
