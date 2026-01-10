@@ -41,12 +41,11 @@ const handleAdd = async (e: React.FormEvent) => {
     if (!form.apiKey || !form.secretKey) return;
 
     try {
-      // 1. Сохраняем ключи в базу данных Neon
       const response = await fetch('/api/save-keys', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId: user.id, // Реальный ID из системы входа
+          userId: user.id,
           apiKey: form.apiKey,
           apiSecret: form.secretKey,
           label: form.name || form.exchange
@@ -54,7 +53,6 @@ const handleAdd = async (e: React.FormEvent) => {
       });
 
       if (response.ok) {
-        // 2. Если в базу сохранилось, обновляем список на экране
         const newConnection: ExchangeConnection = {
           id: Date.now().toString(),
           exchange: form.exchange as any,
@@ -67,7 +65,6 @@ const handleAdd = async (e: React.FormEvent) => {
         setConnections(updated);
         localStorage.setItem('tm_exchange_connections', JSON.stringify(updated));
         setForm({ exchange: 'Binance', name: '', apiKey: '', secretKey: '' });
-        alert('Биржа успешно подключена к вашему аккаунту в базе!');
       } else {
         const errorData = await response.json();
         alert('Ошибка базы: ' + errorData.error);
