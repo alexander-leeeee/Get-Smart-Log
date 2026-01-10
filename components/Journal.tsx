@@ -85,7 +85,17 @@ const Journal: React.FC<JournalProps> = ({ trades, setTrades }) => {
                   <React.Fragment key={trade.id}>
                     <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
                       <td className="p-4 text-slate-700 dark:text-slate-300">{trade.date}</td>
-                      <td className="p-4 font-bold text-slate-900 dark:text-white">{trade.symbol}</td>
+                      <td className="p-4">
+                        <div className="font-bold text-slate-900 dark:text-white">{trade.symbol}</div>
+                        {trade.notes && (
+                          <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 mt-1">
+                            <FileText size={10} className="shrink-0 text-blue-500" />
+                            <span className="truncate max-w-[120px]" title={trade.notes}>
+                              {trade.notes}
+                            </span>
+                          </div>
+                        )}
+                      </td>
                       <td className="p-4">
                         <span className={`px-2 py-1 rounded text-xs font-bold ${trade.direction === TradeDirection.LONG ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'}`}>
                           {trade.direction}
@@ -97,33 +107,35 @@ const Journal: React.FC<JournalProps> = ({ trades, setTrades }) => {
                       <td className={`p-4 font-mono font-bold ${trade.pnl >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
                         {trade.pnl >= 0 ? '+' : ''}{trade.pnl.toFixed(2)} $
                       </td>
-                      <td className="p-4 text-right flex items-center justify-end gap-2">
-                        <button 
-                          onClick={() => startEditingNote(trade)}
-                          className={`p-2 rounded-lg transition-colors ${trade.notes ? 'text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-500/10' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
-                          title={trade.notes ? "Редактировать заметку" : "Добавить заметку"}
-                        >
-                          <FileText size={18} />
-                        </button>
-                        <button 
-                          onClick={() => handleAIAnalysis(trade)}
-                          disabled={analyzingId === trade.id}
-                          className="p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-500/10 rounded-lg transition-colors disabled:opacity-50"
-                          title="ИИ Анализ сделки"
-                        >
-                          {analyzingId === trade.id ? (
-                            <div className="w-5 h-5 border-2 border-purple-600 dark:border-purple-400 border-t-transparent rounded-full animate-spin"></div>
-                          ) : (
-                            <Wand2 size={18} />
-                          )}
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(trade.id)}
-                          className="p-2 text-slate-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
-                          title="Удалить сделку"
-                        >
-                          <Trash2 size={18} />
-                        </button>
+                      <td className="p-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                            <button 
+                              onClick={() => startEditingNote(trade)}
+                              className={`p-2 rounded-lg transition-colors ${trade.notes ? 'text-blue-600 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-500/10' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+                              title={trade.notes ? "Редактировать заметку" : "Добавить заметку"}
+                            >
+                              <FileText size={18} />
+                            </button>
+                            <button 
+                              onClick={() => handleAIAnalysis(trade)}
+                              disabled={analyzingId === trade.id}
+                              className="p-2 text-purple-600 dark:text-purple-400 hover:bg-purple-100 dark:hover:bg-purple-500/10 rounded-lg transition-colors disabled:opacity-50"
+                              title="ИИ Анализ сделки"
+                            >
+                              {analyzingId === trade.id ? (
+                                <div className="w-5 h-5 border-2 border-purple-600 dark:border-purple-400 border-t-transparent rounded-full animate-spin"></div>
+                              ) : (
+                                <Wand2 size={18} />
+                              )}
+                            </button>
+                            <button 
+                              onClick={() => handleDelete(trade.id)}
+                              className="p-2 text-slate-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
+                              title="Удалить сделку"
+                            >
+                              <Trash2 size={18} />
+                            </button>
+                        </div>
                       </td>
                     </tr>
                     
