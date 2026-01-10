@@ -16,7 +16,6 @@ const Auth: React.FC<AuthProps> = ({ onLogin, onBack }) => {
 const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Выбираем куда слать данные: на вход или на регистрацию
     const endpoint = isLogin ? '/api/login' : '/api/register';
 
     try {
@@ -33,13 +32,12 @@ const handleSubmit = async (e: React.FormEvent) => {
       const data = await response.json();
 
       if (response.ok) {
-        // Если всё успешно, логиним пользователя данными из базы
         onLogin({
+          id: data.user?.id,
           username: data.user?.name || username || email.split('@')[0],
           isAuthenticated: true
         });
       } else {
-        // Если база вернула ошибку (например, такой email уже есть)
         alert(data.error || 'Ошибка доступа');
       }
     } catch (err) {
