@@ -7,13 +7,14 @@ import { analyzeTradeWithAI } from '../services/geminiService';
 interface JournalProps {
   trades: Trade[];
   setTrades: React.Dispatch<React.SetStateAction<Trade[]>>;
+  user: any;
 }
 
-const Journal: React.FC<JournalProps> = ({ trades, setTrades }) => {
+const Journal: React.FC<JournalProps> = ({ trades, setTrades, user }) => {
+  const [isSyncing, setIsSyncing] = useState(false);
   const [analyzingId, setAnalyzingId] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<{id: string, text: string} | null>(null);
   
-  // State for note editing
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [noteContent, setNoteContent] = useState<string>('');
 
@@ -51,13 +52,47 @@ const Journal: React.FC<JournalProps> = ({ trades, setTrades }) => {
     setNoteContent('');
   };
 
+const handleSyncHistory = async () => {
+  if (!user?.id) return alert("Ошибка: ID пользователя не найден");
+  
+  setIsSyncing(true);
+  try {
+    const response = await fetch('/api/sync-trades', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        userId: user.id, 
+        loadHistory: true 
+      }),
+    });
+    const data = await response.json();
+    
+    if (response.ok) {
+      alert(`Успешно! ${data.message}`);
+      // Здесь в будущем мы добавим автоматическое обновление списка сделок
+    } else {
+      alert(`Ошибка: ${data.error}`);
+    }
+  } catch (err) {
+    alert('Ошибка связи с сервером');
+  } finally {
+    setIsSyncing(false);
+  }
+};
+  
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Торговый Дневник</h2>
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all hover:scale-105 shadow-sm active:scale-95">
-            <UploadCloud size={20} />
-            <span className="font-medium text-sm hidden sm:inline">Загрузить историю сделок</span>
+        <button 
+            onClick={handleSyncHistory}
+            disabled={isSyncing}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all disabled:opacity-50"
+        >
+            <UploadCloud size={20} className={isSyncing ? 'animate-bounce' : ''} />
+            <span className="font-medium text-sm">
+                {isSyncing ? 'Загрузка...' : 'Загрузить историю сделок'}
+            </span>
         </button>
       </div>
 
