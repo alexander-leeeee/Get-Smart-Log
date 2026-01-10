@@ -3,18 +3,28 @@ import { neon } from '@neondatabase/serverless';
 export default async function handler(req: any, res: any) {
   const sql = neon(process.env.DATABASE_URL!);
 
-  if (req.method === 'POST') {
-    const { userId, exchange, label, apiKey, apiSecret } = req.body;
-
-    try {
-      await sql`
-        INSERT INTO exchange_connections (user_id, exchange_name, label, api_key, api_secret)
-        VALUES (${userId}, ${exchange}, ${label}, ${apiKey}, ${apiSecret})
-      `;
-      return res.status(200).json({ message: 'Ключи успешно сохранены в базе' });
-    } catch (error) {
-      return res.status(500).json({ error: 'Ошибка сохранения ключей' });
-    }
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method not allowed' });
   }
-  return res.status(405).send('Method not allowed');
+
+  const { userId, apiKey, apiSecret, label } = req.body;
+
+  if (!userId || !apiKey || !apiSecret) {
+    return res.status(400).json({ error: 'Не все поля заполнены' });
+  }
+
+  try {
+    // Записываем ключи. Если для этого юзера уже есть ключи binance — обновляем их
+    await sql`
+      INSERT INTO api_keys (user_id, exchange_name, api_key, api_secret)
+      VALUES (${userId}, 'binance', ${apiKey}, ${apiSecret})
+      ON CONFLICT (user_id, exchange_name) 
+      DO UPDATE SET api_key = ${apiKey}, api_secret = ${apiSecret}
+    `;
+
+    return res.status(200).json({ success: true, message: 'Ключи сохранены' });
+  } catch (error: any) {
+    console.error(error);
+    return res.status(500).json({ error: 'Ошибка базы данных' });
+  }
 }
