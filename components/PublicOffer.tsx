@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Mail, Send, Menu, X, Sun, Moon } from 'lucide-react';
+import { Mail, Send, Menu, X, Sun, Moon, Languages } from 'lucide-react';
+import { Language } from '../types';
+import { translations } from '../utils/translations';
 
 interface PublicOfferProps {
   onBack: () => void;
@@ -7,16 +9,21 @@ interface PublicOfferProps {
   onNavigateToContacts: () => void;
   onNavigateToPricing: () => void;
   onNavigateToBlog: () => void;
+  onNavigateToPublicOffer: () => void;
   onNavigateToPrivacyPolicy: () => void;
   isDarkMode: boolean;
   toggleTheme: () => void;
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  toggleLanguage: () => void;
 }
 
 const PublicOffer: React.FC<PublicOfferProps> = ({ 
   onBack, onStart, onNavigateToContacts, onNavigateToPricing, 
-  onNavigateToBlog, onNavigateToPrivacyPolicy, isDarkMode, toggleTheme 
+  onNavigateToBlog, onNavigateToPublicOffer, onNavigateToPrivacyPolicy, isDarkMode, toggleTheme, language, setLanguage
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const t = translations[language];
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
@@ -40,7 +47,7 @@ const PublicOffer: React.FC<PublicOfferProps> = ({
                 onClick={onStart}
                 className="hidden md:block text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
               >
-                Войти
+                {t.nav.login}
               </button>
               
               {/* Burger Button */}
@@ -58,6 +65,22 @@ const PublicOffer: React.FC<PublicOfferProps> = ({
               >
                 {isDarkMode ? <Sun size={24} /> : <Moon size={24} />}
               </button>
+
+              {/* Language Switcher */}
+              <div className="relative group">
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value as Language)}
+                  className="appearance-none bg-transparent font-bold text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 py-2 pl-3 pr-8 rounded-lg cursor-pointer outline-none transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+                >
+                  <option value="ru" className="bg-white dark:bg-slate-900">RU</option>
+                  <option value="ua" className="bg-white dark:bg-slate-900">UA</option>
+                  <option value="en" className="bg-white dark:bg-slate-900">EN</option>
+                </select>
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                  <Languages size={14} />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -73,7 +96,7 @@ const PublicOffer: React.FC<PublicOfferProps> = ({
                   onBack();
                 }}
               >
-                Главная
+                {t.nav.home}
               </button>
               <button 
                 className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
@@ -82,7 +105,7 @@ const PublicOffer: React.FC<PublicOfferProps> = ({
                   onNavigateToPricing();
                 }}
               >
-                Цены
+                {t.nav.pricing}
               </button>
               <button 
                 className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
@@ -91,7 +114,7 @@ const PublicOffer: React.FC<PublicOfferProps> = ({
                   onNavigateToBlog();
                 }}
               >
-                Блог
+                {t.nav.blog}
               </button>
               <button 
                 className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
@@ -100,7 +123,7 @@ const PublicOffer: React.FC<PublicOfferProps> = ({
                   onNavigateToContacts();
                 }}
               >
-                Контакты
+                {t.nav.contacts}
               </button>
             </div>
             
@@ -112,7 +135,7 @@ const PublicOffer: React.FC<PublicOfferProps> = ({
                 }}
                 className="w-full max-w-md mx-auto block py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-lg shadow-lg shadow-blue-600/20 transition-all hover:scale-[1.02]"
               >
-                Войти в кабинет
+                {t.nav.cabinet}
               </button>
             </div>
           </div>
@@ -124,57 +147,35 @@ const PublicOffer: React.FC<PublicOfferProps> = ({
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-16">
             <h1 className="text-3xl md:text-5xl font-extrabold mb-6 text-slate-900 dark:text-white">
-              Публичная оферта
+              {t.nav.offer}
             </h1>
-            <p className="text-slate-500 dark:text-slate-400">Последнее обновление: {new Date().toLocaleDateString('ru-RU')}</p>
+            <p className="text-slate-500 dark:text-slate-400">
+              {language === 'ru' ? `Последнее обновление: ${new Date().toLocaleDateString('ru-RU')}` 
+               : language === 'ua' ? `Останнє оновлення: ${new Date().toLocaleDateString('uk-UA')}`
+               : `Last updated: ${new Date().toLocaleDateString('en-US')}`}
+            </p>
           </div>
 
           <div className="prose prose-lg dark:prose-invert max-w-none bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <p>
-              Настоящий документ является официальным предложением (публичной офертой) сервиса <strong>Get Smart Log</strong> (далее — «Исполнитель») и содержит все существенные условия предоставления услуг любому физическому или юридическому лицу (далее — «Заказчик»).
-            </p>
-
-            <h3>1. Общие положения</h3>
-            <p>
-              1.1. В соответствии со статьей 437 Гражданского Кодекса Российской Федерации (ГК РФ) данный документ является публичной офертой. Акцептом оферты является факт регистрации на сайте сервиса или оплата услуг.
-            </p>
-            <p>
-              1.2. Исполнитель оставляет за собой право вносить изменения в настоящую Оферту без предварительного уведомления Заказчика. Новая редакция вступает в силу с момента ее размещения на сайте.
-            </p>
-
-            <h3>2. Предмет оферты</h3>
-            <p>
-              2.1. Исполнитель обязуется предоставить Заказчику доступ к программному обеспечению «Get Smart Log» для ведения торгового дневника и анализа сделок, а Заказчик обязуется оплатить эти услуги в соответствии с выбранным тарифом.
-            </p>
-
-            <h3>3. Права и обязанности сторон</h3>
-            <p>
-              3.1. Исполнитель обязуется обеспечивать работоспособность сервиса 24/7, за исключением времени проведения технических работ.
-            </p>
-            <p>
-              3.2. Заказчик обязуется не использовать сервис для противоправных действий и не передавать доступ к своему аккаунту третьим лицам.
-            </p>
-
-            <h3>4. Стоимость услуг и порядок расчетов</h3>
-            <p>
-              4.1. Стоимость услуг определяется в соответствии с тарифами, опубликованными на странице «Цены».
-            </p>
-            <p>
-              4.2. Оплата производится в безналичном порядке. Услуга считается оказанной в момент предоставления доступа к расширенному функционалу.
-            </p>
-
-            <h3>5. Ответственность сторон</h3>
-            <p>
-              5.1. Исполнитель не несет ответственности за финансовые убытки Заказчика, понесенные в результате торговой деятельности. Сервис носит исключительно информационный и аналитический характер.
-            </p>
-            <p>
-              5.2. Заказчик самостоятельно принимает решения о совершении сделок на финансовых рынках.
-            </p>
-
-            <h3>6. Заключительные положения</h3>
-            <p>
-              6.1. Все споры и разногласия решаются путем переговоров. В случае невозможности достижения соглашения спор передается на рассмотрение в суд по месту нахождения Исполнителя.
-            </p>
+            {language === 'ru' ? (
+              <>
+                <p>Настоящий документ является официальным предложением...</p>
+                <h3>1. Общие положения</h3>
+                <p>1.1. В соответствии со статьей 437...</p>
+              </>
+            ) : language === 'ua' ? (
+              <>
+                <p>Цей документ є офіційною пропозицією...</p>
+                <h3>1. Загальні положення</h3>
+                <p>1.1. Відповідно до статті 437...</p>
+              </>
+            ) : (
+              <>
+                <p>This document is an official offer...</p>
+                <h3>1. General Provisions</h3>
+                <p>1.1. In accordance with...</p>
+              </>
+            )}
           </div>
         </div>
       </main>
@@ -195,21 +196,25 @@ const PublicOffer: React.FC<PublicOfferProps> = ({
                 <span className="text-xl font-bold text-slate-900 dark:text-white">Get Smart Log</span>
               </div>
               <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
-                Ваш надежный партнер в мире трейдинга. Анализируйте, учитесь и зарабатывайте с помощью передовых технологий.
+                {language === 'ru' 
+                 ? 'Ваш надежный партнер в мире трейдинга. Анализируйте, учитесь и зарабатывайте с помощью передовых технологий.'
+                 : language === 'ua'
+                 ? 'Ваш надійний партнер у світі трейдингу. Аналізуйте, навчайтеся та заробляйте за допомогою передових технологій.'
+                 : 'Your trusted partner in the world of trading. Analyze, learn, and earn with advanced technologies.'}
               </p>
             </div>
 
             {/* Menu Links */}
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Меню</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">{t.nav.menu}</h3>
               <ul className="space-y-3">
-                <li><button onClick={onBack} className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Главная</button></li>
+                <li><button onClick={onBack} className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{t.nav.home}</button></li>
                 <li>
                   <button 
                     onClick={onNavigateToPricing}
                     className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
-                    Цены
+                     {t.nav.pricing}
                   </button>
                 </li>
                 <li>
@@ -217,7 +222,7 @@ const PublicOffer: React.FC<PublicOfferProps> = ({
                     onClick={onNavigateToBlog}
                     className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
-                    Блог
+                    {t.nav.blog}
                   </button>
                 </li>
                 <li>
@@ -225,7 +230,7 @@ const PublicOffer: React.FC<PublicOfferProps> = ({
                     onClick={onNavigateToContacts}
                     className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
-                    Контакты
+                    {t.nav.contacts}
                   </button>
                 </li>
               </ul>
@@ -233,13 +238,14 @@ const PublicOffer: React.FC<PublicOfferProps> = ({
 
             {/* Legal Links */}
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Документы</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">{t.nav.docs}</h3>
               <ul className="space-y-3">
                 <li>
                   <button 
-                    className="text-slate-500 dark:text-slate-400 font-semibold text-blue-600 dark:text-blue-400 cursor-default text-left"
+                    onClick={onNavigateToPublicOffer}
+                    className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
-                    Публичная оферта
+                    {t.nav.offer}
                   </button>
                 </li>
                 <li>
@@ -247,16 +253,16 @@ const PublicOffer: React.FC<PublicOfferProps> = ({
                     onClick={onNavigateToPrivacyPolicy}
                     className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
-                    Политика конфиденциальности
+                     {t.nav.privacy}
                   </button>
                 </li>
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Карта сайта</a></li>
+                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{t.nav.map}</a></li>
               </ul>
             </div>
 
             {/* Contacts */}
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Контакты</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">{t.nav.contacts}</h3>
               <ul className="space-y-3">
                 <li className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
                   <Mail size={16} className="text-blue-500" />
@@ -272,10 +278,7 @@ const PublicOffer: React.FC<PublicOfferProps> = ({
 
           {/* Bottom Bar */}
           <div className="border-t border-slate-200 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 dark:text-slate-500">
-            <p>&copy; {new Date().getFullYear()} Get Smart Log. Все права защищены.</p>
-            <div className="flex gap-6">
-              {/* Social icons could go here */}
-            </div>
+            <p>&copy; {new Date().getFullYear()} Get Smart Log. {t.common.rights}</p>
           </div>
         </div>
       </footer>

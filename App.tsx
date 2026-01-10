@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Trade, ViewState, TradeDirection } from './types';
+import { User, Trade, ViewState, TradeDirection, Language } from './types';
 import Auth from './components/Auth';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
@@ -27,6 +27,12 @@ const App: React.FC = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     const savedTheme = localStorage.getItem('tm_theme');
     return savedTheme ? savedTheme === 'dark' : true;
+  });
+
+  // Language state
+  const [language, setLanguage] = useState<Language>(() => {
+     const savedLang = localStorage.getItem('tm_lang');
+     return (savedLang === 'en' || savedLang === 'ua' || savedLang === 'ru') ? (savedLang as Language) : 'ru';
   });
   
   // Initialize with some dummy data for demonstration
@@ -79,6 +85,11 @@ const App: React.FC = () => {
     setIsDarkMode(prev => !prev);
   };
 
+  const handleSetLanguage = (lang: Language) => {
+    setLanguage(lang);
+    localStorage.setItem('tm_lang', lang);
+  };
+
   const handleLogin = (newUser: User) => {
     setUser(newUser);
     localStorage.setItem('tm_user', JSON.stringify(newUser));
@@ -97,76 +108,26 @@ const App: React.FC = () => {
     if (publicView === 'AUTH') {
       return <Auth onLogin={handleLogin} onBack={() => setPublicView('LANDING')} />;
     }
-    if (publicView === 'CONTACTS') {
-      return (
-        <Contacts 
-          onBack={() => setPublicView('LANDING')} 
-          onStart={() => setPublicView('AUTH')}
-          onNavigateToPricing={() => setPublicView('PRICING')}
-          onNavigateToBlog={() => setPublicView('BLOG')}
-          onNavigateToPublicOffer={() => setPublicView('PUBLIC_OFFER')}
-          onNavigateToPrivacyPolicy={() => setPublicView('PRIVACY_POLICY')}
-          isDarkMode={isDarkMode}
-          toggleTheme={toggleTheme}
-        />
-      );
-    }
-    if (publicView === 'PRICING') {
-      return (
-        <Pricing 
-          onBack={() => setPublicView('LANDING')} 
-          onStart={() => setPublicView('AUTH')}
-          onNavigateToContacts={() => setPublicView('CONTACTS')}
-          onNavigateToBlog={() => setPublicView('BLOG')}
-          onNavigateToPublicOffer={() => setPublicView('PUBLIC_OFFER')}
-          onNavigateToPrivacyPolicy={() => setPublicView('PRIVACY_POLICY')}
-          isDarkMode={isDarkMode}
-          toggleTheme={toggleTheme}
-        />
-      );
-    }
-    if (publicView === 'BLOG') {
-      return (
-        <Blog 
-          onBack={() => setPublicView('LANDING')}
-          onStart={() => setPublicView('AUTH')}
-          onNavigateToPricing={() => setPublicView('PRICING')}
-          onNavigateToContacts={() => setPublicView('CONTACTS')}
-          onNavigateToPublicOffer={() => setPublicView('PUBLIC_OFFER')}
-          onNavigateToPrivacyPolicy={() => setPublicView('PRIVACY_POLICY')}
-          isDarkMode={isDarkMode}
-          toggleTheme={toggleTheme}
-        />
-      );
-    }
-    if (publicView === 'PUBLIC_OFFER') {
-      return (
-        <PublicOffer
-          onBack={() => setPublicView('LANDING')}
-          onStart={() => setPublicView('AUTH')}
-          onNavigateToPricing={() => setPublicView('PRICING')}
-          onNavigateToBlog={() => setPublicView('BLOG')}
-          onNavigateToContacts={() => setPublicView('CONTACTS')}
-          onNavigateToPrivacyPolicy={() => setPublicView('PRIVACY_POLICY')}
-          isDarkMode={isDarkMode}
-          toggleTheme={toggleTheme}
-        />
-      );
-    }
-    if (publicView === 'PRIVACY_POLICY') {
-      return (
-        <PrivacyPolicy
-          onBack={() => setPublicView('LANDING')}
-          onStart={() => setPublicView('AUTH')}
-          onNavigateToPricing={() => setPublicView('PRICING')}
-          onNavigateToBlog={() => setPublicView('BLOG')}
-          onNavigateToContacts={() => setPublicView('CONTACTS')}
-          onNavigateToPublicOffer={() => setPublicView('PUBLIC_OFFER')}
-          isDarkMode={isDarkMode}
-          toggleTheme={toggleTheme}
-        />
-      );
-    }
+    const publicProps = {
+      onBack: () => setPublicView('LANDING'),
+      onStart: () => setPublicView('AUTH'),
+      onNavigateToContacts: () => setPublicView('CONTACTS'),
+      onNavigateToPricing: () => setPublicView('PRICING'),
+      onNavigateToBlog: () => setPublicView('BLOG'),
+      onNavigateToPublicOffer: () => setPublicView('PUBLIC_OFFER'),
+      onNavigateToPrivacyPolicy: () => setPublicView('PRIVACY_POLICY'),
+      isDarkMode,
+      toggleTheme,
+      language,
+      setLanguage: handleSetLanguage
+    };
+
+    if (publicView === 'CONTACTS') return <Contacts {...publicProps} />;
+    if (publicView === 'PRICING') return <Pricing {...publicProps} />;
+    if (publicView === 'BLOG') return <Blog {...publicProps} />;
+    if (publicView === 'PUBLIC_OFFER') return <PublicOffer {...publicProps} />;
+    if (publicView === 'PRIVACY_POLICY') return <PrivacyPolicy {...publicProps} />;
+    
     return (
       <LandingPage 
         onStart={() => setPublicView('AUTH')} 
@@ -177,6 +138,8 @@ const App: React.FC = () => {
         onNavigateToPrivacyPolicy={() => setPublicView('PRIVACY_POLICY')}
         isDarkMode={isDarkMode}
         toggleTheme={toggleTheme}
+        language={language}
+        setLanguage={handleSetLanguage}
       />
     );
   }
@@ -190,12 +153,27 @@ const App: React.FC = () => {
         onLogout={handleLogout}
         isDarkMode={isDarkMode}
         toggleTheme={toggleTheme}
+        language={language}
+        setLanguage={handleSetLanguage}
       />
       
       {/* Mobile Header (visible only on small screens) */}
       <div className="md:hidden fixed top-0 left-0 right-0 bg-white dark:bg-slate-900 p-4 border-b border-slate-200 dark:border-slate-800 z-50 flex justify-between items-center transition-colors">
         <span className="font-bold">Get Smart Log</span>
-        <button onClick={handleLogout} className="text-sm text-red-500 dark:text-red-400">Выйти</button>
+        <div className="flex items-center gap-3">
+             <select 
+               value={language}
+               onChange={(e) => handleSetLanguage(e.target.value as Language)}
+               className="bg-transparent font-bold text-sm outline-none cursor-pointer"
+             >
+               <option value="ru">RU</option>
+               <option value="ua">UA</option>
+               <option value="en">EN</option>
+             </select>
+             <button onClick={handleLogout} className="text-sm text-red-500 dark:text-red-400">
+                {language === 'ru' ? 'Выйти' : language === 'ua' ? 'Вийти' : 'Logout'}
+             </button>
+        </div>
       </div>
 
       {/* Main Content Area */}

@@ -1,3 +1,4 @@
+
 export enum TradeDirection {
   LONG = 'LONG',
   SHORT = 'SHORT'
@@ -30,3 +31,5 @@ export interface RiskCalculationResult {
 }
 
 export type ViewState = 'HOME' | 'DASHBOARD' | 'JOURNAL' | 'RISK_CALC' | 'AI_ANALYSIS' | 'SETTINGS';
+
+export type Language = 'ru' | 'en' | 'ua';

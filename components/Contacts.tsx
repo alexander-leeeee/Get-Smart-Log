@@ -1,26 +1,33 @@
 import React, { useState } from 'react';
-import { Mail, Send, ArrowLeft, Menu, X, Sun, Moon } from 'lucide-react';
+import { Mail, Send, ArrowLeft, Menu, X, Sun, Moon, Languages } from 'lucide-react';
+import { Language } from '../types';
+import { translations } from '../utils/translations';
 
 interface ContactsProps {
   onBack: () => void;
   onStart: () => void;
   onNavigateToPricing: () => void;
   onNavigateToBlog: () => void;
+  onNavigateToContacts: () => void;
   onNavigateToPublicOffer: () => void;
   onNavigateToPrivacyPolicy: () => void;
   isDarkMode: boolean;
   toggleTheme: () => void;
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  toggleLanguage: () => void;
 }
 
 const Contacts: React.FC<ContactsProps> = ({ 
-  onBack, onStart, onNavigateToPricing, onNavigateToBlog, 
-  onNavigateToPublicOffer, onNavigateToPrivacyPolicy, isDarkMode, toggleTheme 
+  onBack, onStart, onNavigateToPricing, onNavigateToBlog, onNavigateToContacts,
+  onNavigateToPublicOffer, onNavigateToPrivacyPolicy, isDarkMode, toggleTheme, language, setLanguage
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const t = translations[language];
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Спасибо за сообщение! Мы свяжемся с вами в ближайшее время.');
+    alert(language === 'ua' ? 'Дякуємо за повідомлення! Ми зв\'яжемося з вами найближчим часом.' : 'Спасибо за сообщение! Мы свяжемся с вами в ближайшее время.');
   };
 
   return (
@@ -45,7 +52,7 @@ const Contacts: React.FC<ContactsProps> = ({
                 onClick={onStart}
                 className="hidden md:block text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
               >
-                Войти
+                {t.nav.login}
               </button>
               
               {/* Burger Button */}
@@ -63,6 +70,22 @@ const Contacts: React.FC<ContactsProps> = ({
               >
                 {isDarkMode ? <Sun size={24} /> : <Moon size={24} />}
               </button>
+
+              {/* Language Switcher */}
+              <div className="relative group">
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value as Language)}
+                  className="appearance-none bg-transparent font-bold text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 py-2 pl-3 pr-8 rounded-lg cursor-pointer outline-none transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+                >
+                  <option value="ru" className="bg-white dark:bg-slate-900">RU</option>
+                  <option value="ua" className="bg-white dark:bg-slate-900">UA</option>
+                  <option value="en" className="bg-white dark:bg-slate-900">EN</option>
+                </select>
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                  <Languages size={14} />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -78,7 +101,7 @@ const Contacts: React.FC<ContactsProps> = ({
                   onBack();
                 }}
               >
-                Главная
+                {t.nav.home}
               </button>
               <button 
                 className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
@@ -87,7 +110,7 @@ const Contacts: React.FC<ContactsProps> = ({
                   onNavigateToPricing();
                 }}
               >
-                Цены
+                 {t.nav.pricing}
               </button>
               <button 
                 className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
@@ -96,13 +119,13 @@ const Contacts: React.FC<ContactsProps> = ({
                   onNavigateToBlog();
                 }}
               >
-                Блог
+                {t.nav.blog}
               </button>
               <button 
                 className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
                 onClick={() => setIsMenuOpen(false)}
               >
-                Контакты
+                {t.nav.contacts}
               </button>
             </div>
             
@@ -114,7 +137,7 @@ const Contacts: React.FC<ContactsProps> = ({
                 }}
                 className="w-full max-w-md mx-auto block py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-lg shadow-lg shadow-blue-600/20 transition-all hover:scale-[1.02]"
               >
-                Войти в кабинет
+                {t.nav.cabinet}
               </button>
             </div>
           </div>
@@ -126,10 +149,10 @@ const Contacts: React.FC<ContactsProps> = ({
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
-              Свяжитесь с нами
+              {t.contacts.title}
             </h1>
             <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
-              Мы всегда рады помочь. Выберите удобный способ связи или заполните форму ниже.
+              {t.contacts.subtitle}
             </p>
           </div>
 
@@ -137,7 +160,7 @@ const Contacts: React.FC<ContactsProps> = ({
             {/* Contact Info */}
             <div className="space-y-8">
               <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-                <h3 className="text-2xl font-bold mb-6">Наши контакты</h3>
+                <h3 className="text-2xl font-bold mb-6">{t.contacts.infoTitle}</h3>
                 
                 <div className="space-y-6">
                   <div className="flex items-start gap-4">
@@ -145,11 +168,11 @@ const Contacts: React.FC<ContactsProps> = ({
                       <Mail size={24} />
                     </div>
                     <div>
-                      <p className="font-semibold text-lg mb-1">Email</p>
+                      <p className="font-semibold text-lg mb-1">{t.contacts.email}</p>
                       <a href="mailto:support@getsmartlog.trade" className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                         support@getsmartlog.trade
                       </a>
-                      <p className="text-sm text-slate-500 mt-1">Для общих вопросов и поддержки</p>
+                      <p className="text-sm text-slate-500 mt-1">{t.contacts.emailDesc}</p>
                     </div>
                   </div>
 
@@ -162,22 +185,22 @@ const Contacts: React.FC<ContactsProps> = ({
                       <a href="https://t.me/alexander_leeee" target="_blank" rel="noopener noreferrer" className="text-slate-600 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                         @alexander_leeee
                       </a>
-                      <p className="text-sm text-slate-500 mt-1">Быстрая связь с менеджером</p>
+                      <p className="text-sm text-slate-500 mt-1">{t.contacts.tgDesc}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
               <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white">
-                <h3 className="text-xl font-bold mb-4">Часы работы поддержки</h3>
+                <h3 className="text-xl font-bold mb-4">{t.contacts.hoursTitle}</h3>
                 <div className="space-y-2 text-blue-100">
                   <div className="flex justify-between">
-                    <span>Понедельник - Пятница</span>
+                    <span>{language === 'en' ? 'Monday - Friday' : language === 'ua' ? 'Понеділок - П\'ятниця' : 'Понедельник - Пятница'}</span>
                     <span>10:00 - 19:00</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Суббота - Воскресенье</span>
-                    <span>Свободный график</span>
+                    <span>{language === 'en' ? 'Saturday - Sunday' : language === 'ua' ? 'Субота - Неділя' : 'Суббота - Воскресенье'}</span>
+                    <span>{language === 'en' ? 'Flexible hours' : language === 'ua' ? 'Вільний графік' : 'Свободный график'}</span>
                   </div>
                 </div>
               </div>
@@ -185,23 +208,23 @@ const Contacts: React.FC<ContactsProps> = ({
 
             {/* Contact Form */}
             <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-              <h3 className="text-2xl font-bold mb-6">Напишите нам</h3>
+              <h3 className="text-2xl font-bold mb-6">{t.contacts.formTitle}</h3>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                      Ваше имя
+                      {t.contacts.name}
                     </label>
                     <input
                       type="text"
                       required
                       className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                      placeholder="Иван Иванов"
+                      placeholder={language === 'en' ? "John Doe" : language === 'ua' ? "Іван Іванов" : "Иван Иванов"}
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                      Email
+                      {t.contacts.email}
                     </label>
                     <input
                       type="email"
@@ -214,25 +237,25 @@ const Contacts: React.FC<ContactsProps> = ({
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    Тема
+                    {t.contacts.topic}
                   </label>
                   <select className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 transition-colors">
-                    <option>Техническая поддержка</option>
-                    <option>Вопрос по оплате</option>
-                    <option>Предложение о сотрудничестве</option>
-                    <option>Другое</option>
+                    <option>{language === 'en' ? 'Technical Support' : language === 'ua' ? 'Технічна підтримка' : 'Техническая поддержка'}</option>
+                    <option>{language === 'en' ? 'Billing Question' : language === 'ua' ? 'Питання щодо оплати' : 'Вопрос по оплате'}</option>
+                    <option>{language === 'en' ? 'Partnership Proposal' : language === 'ua' ? 'Пропозиція про співпрацю' : 'Предложение о сотрудничестве'}</option>
+                    <option>{language === 'en' ? 'Other' : language === 'ua' ? 'Інше' : 'Другое'}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                    Сообщение
+                    {t.contacts.message}
                   </label>
                   <textarea
                     required
                     rows={4}
                     className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
-                    placeholder="Опишите ваш вопрос..."
+                    placeholder={language === 'en' ? "Describe your question..." : language === 'ua' ? "Опишіть ваше запитання..." : "Опишите ваш вопрос..."}
                   ></textarea>
                 </div>
 
@@ -240,7 +263,7 @@ const Contacts: React.FC<ContactsProps> = ({
                   type="submit"
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl py-4 transition-transform active:scale-[0.98]"
                 >
-                  Отправить сообщение
+                  {t.contacts.submit}
                 </button>
               </form>
             </div>
@@ -264,21 +287,25 @@ const Contacts: React.FC<ContactsProps> = ({
                 <span className="text-xl font-bold text-slate-900 dark:text-white">Get Smart Log</span>
               </div>
               <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
-                Ваш надежный партнер в мире трейдинга. Анализируйте, учитесь и зарабатывайте с помощью передовых технологий.
+                 {language === 'ru' 
+                 ? 'Ваш надежный партнер в мире трейдинга. Анализируйте, учитесь и зарабатывайте с помощью передовых технологий.'
+                 : language === 'ua'
+                 ? 'Ваш надійний партнер у світі трейдингу. Аналізуйте, навчайтеся та заробляйте за допомогою передових технологій.'
+                 : 'Your trusted partner in the world of trading. Analyze, learn, and earn with advanced technologies.'}
               </p>
             </div>
 
             {/* Menu Links */}
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Меню</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">{t.nav.menu}</h3>
               <ul className="space-y-3">
-                <li><button onClick={onBack} className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Главная</button></li>
+                <li><button onClick={onBack} className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{t.nav.home}</button></li>
                 <li>
                   <button 
                     onClick={onNavigateToPricing}
                     className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
-                    Цены
+                     {t.nav.pricing}
                   </button>
                 </li>
                 <li>
@@ -286,14 +313,15 @@ const Contacts: React.FC<ContactsProps> = ({
                     onClick={onNavigateToBlog}
                     className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
-                    Блог
+                    {t.nav.blog}
                   </button>
                 </li>
                 <li>
                   <button 
-                    className="text-slate-500 dark:text-slate-400 font-semibold text-blue-600 dark:text-blue-400 cursor-default"
+                    onClick={onNavigateToContacts}
+                    className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
-                    Контакты
+                    {t.nav.contacts}
                   </button>
                 </li>
               </ul>
@@ -301,14 +329,14 @@ const Contacts: React.FC<ContactsProps> = ({
 
             {/* Legal Links */}
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Документы</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">{t.nav.docs}</h3>
               <ul className="space-y-3">
                 <li>
                   <button 
                     onClick={onNavigateToPublicOffer}
                     className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
-                    Публичная оферта
+                    {t.nav.offer}
                   </button>
                 </li>
                 <li>
@@ -316,16 +344,16 @@ const Contacts: React.FC<ContactsProps> = ({
                     onClick={onNavigateToPrivacyPolicy}
                     className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
-                    Политика конфиденциальности
+                     {t.nav.privacy}
                   </button>
                 </li>
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Карта сайта</a></li>
+                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{t.nav.map}</a></li>
               </ul>
             </div>
 
             {/* Contacts */}
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Контакты</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">{t.nav.contacts}</h3>
               <ul className="space-y-3">
                 <li className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
                   <Mail size={16} className="text-blue-500" />
@@ -341,10 +369,7 @@ const Contacts: React.FC<ContactsProps> = ({
 
           {/* Bottom Bar */}
           <div className="border-t border-slate-200 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 dark:text-slate-500">
-            <p>&copy; {new Date().getFullYear()} Get Smart Log. Все права защищены.</p>
-            <div className="flex gap-6">
-              {/* Social icons could go here */}
-            </div>
+            <p>&copy; {new Date().getFullYear()} Get Smart Log. {t.common.rights}</p>
           </div>
         </div>
       </footer>

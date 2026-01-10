@@ -1,6 +1,7 @@
 import React from 'react';
-import { LayoutDashboard, BookOpen, Calculator, BrainCircuit, LogOut, Settings, Moon, Sun, Home } from 'lucide-react';
-import { ViewState } from '../types';
+import { LayoutDashboard, BookOpen, Calculator, BrainCircuit, LogOut, Settings, Moon, Sun, Home, Languages } from 'lucide-react';
+import { ViewState, Language } from '../types';
+import { translations } from '../utils/translations';
 
 interface SidebarProps {
   currentView: ViewState;
@@ -8,15 +9,19 @@ interface SidebarProps {
   onLogout: () => void;
   isDarkMode: boolean;
   toggleTheme: () => void;
+  language: Language;
+  setLanguage: (lang: Language) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, onLogout, isDarkMode, toggleTheme }) => {
+const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, onLogout, isDarkMode, toggleTheme, language, setLanguage }) => {
+  const t = translations[language].sidebar;
+
   const menuItems = [
-    { id: 'HOME' as ViewState, label: 'Главная', icon: Home },
-    { id: 'DASHBOARD' as ViewState, label: 'Дашборд', icon: LayoutDashboard },
-    { id: 'JOURNAL' as ViewState, label: 'Дневник', icon: BookOpen },
-    { id: 'RISK_CALC' as ViewState, label: 'Риск-менеджер', icon: Calculator },
-    { id: 'AI_ANALYSIS' as ViewState, label: 'ИИ Анализ', icon: BrainCircuit },
+    { id: 'HOME' as ViewState, label: t.home, icon: Home },
+    { id: 'DASHBOARD' as ViewState, label: t.dashboard, icon: LayoutDashboard },
+    { id: 'JOURNAL' as ViewState, label: t.journal, icon: BookOpen },
+    { id: 'RISK_CALC' as ViewState, label: t.risk, icon: Calculator },
+    { id: 'AI_ANALYSIS' as ViewState, label: t.ai, icon: BrainCircuit },
   ];
 
   return (
@@ -57,8 +62,21 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, onLogout, 
           className="w-full flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 rounded-lg transition-colors"
         >
           {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
-          <span>{isDarkMode ? 'Светлая тема' : 'Темная тема'}</span>
+          <span>{isDarkMode ? t.themeLight : t.themeDark}</span>
         </button>
+
+        <div className="w-full relative flex items-center gap-3 px-4 py-3 text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 rounded-lg transition-colors">
+          <Languages size={20} />
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as Language)}
+            className="w-full bg-transparent border-none outline-none appearance-none cursor-pointer"
+          >
+            <option value="ru" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Русский</option>
+            <option value="ua" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">Українська</option>
+            <option value="en" className="bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">English</option>
+          </select>
+        </div>
 
         <button
           onClick={() => onChangeView('SETTINGS')}
@@ -69,7 +87,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, onLogout, 
           }`}
         >
           <Settings size={20} />
-          <span>Настройки</span>
+          <span>{t.settings}</span>
         </button>
 
         <button
@@ -77,7 +95,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, onLogout, 
           className="w-full flex items-center gap-3 px-4 py-3 text-red-500 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 hover:text-red-600 dark:hover:text-red-300 rounded-lg transition-colors"
         >
           <LogOut size={20} />
-          <span>Выйти</span>
+          <span>{t.logout}</span>
         </button>
       </div>
     </div>

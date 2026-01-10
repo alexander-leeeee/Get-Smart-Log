@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { LayoutDashboard, BookOpen, Calculator, BrainCircuit, ArrowRight, CheckCircle2, TrendingUp, Menu, X, Mail, Send, LineChart, Globe, Smartphone, HelpCircle, Sun, Moon } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Calculator, BrainCircuit, ArrowRight, CheckCircle2, TrendingUp, Menu, X, Mail, Send, LineChart, Globe, Smartphone, HelpCircle, Sun, Moon, Languages } from 'lucide-react';
+import { Language } from '../types';
+import { translations } from '../utils/translations';
 
 interface LandingPageProps {
   onStart: () => void;
@@ -10,6 +12,9 @@ interface LandingPageProps {
   onNavigateToPrivacyPolicy: () => void;
   isDarkMode: boolean;
   toggleTheme: () => void;
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  toggleLanguage: () => void; // Keep for interface compatibility if needed, but unused
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ 
@@ -20,9 +25,39 @@ const LandingPage: React.FC<LandingPageProps> = ({
   onNavigateToPublicOffer,
   onNavigateToPrivacyPolicy,
   isDarkMode,
-  toggleTheme
+  toggleTheme,
+  language,
+  setLanguage
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const t = translations[language];
+
+  const getFaqData = () => {
+    if (language === 'ru') {
+      return [
+        { q: "Можно ли пользоваться бесплатно?", a: "Да, базовый функционал доступен бесплатно. Вы можете вести дневник и пользоваться калькулятором риска без ограничений." },
+        { q: "Какие рынки поддерживаются?", a: "Get Smart Log универсален. Вы можете записывать сделки с криптовалютных бирж, Форекса или фондового рынка." },
+        { q: "Безопасны ли мои данные?", a: "Мы серьезно относимся к безопасности. Ваши торговые данные хранятся в зашифрованном виде и не передаются третьим лицам." },
+        { q: "Как работает ИИ-анализ?", a: "Мы используем Gemini AI для анализа ваших записей. Он оценивает технические и психологические аспекты сделки, давая советы." }
+      ];
+    } else if (language === 'ua') {
+      return [
+        { q: "Чи можна користуватися безкоштовно?", a: "Так, базовий функціонал доступний безкоштовно. Ви можете вести щоденник та користуватися калькулятором ризику без обмежень." },
+        { q: "Які ринки підтримуються?", a: "Get Smart Log універсальний. Ви можете записувати угоди з криптовалютних бірж, Форексу або фондового ринку." },
+        { q: "Чи безпечні мої дані?", a: "Ми серйозно ставимося до безпеки. Ваші торгові дані зберігаються в зашифрованому вигляді і не передаються третім особам." },
+        { q: "Як працює ШІ-аналіз?", a: "Ми використовуємо Gemini AI для аналізу ваших записів. Він оцінює технічні та психологічні аспекти угоди, даючи поради." }
+      ];
+    } else {
+      return [
+        { q: "Is it free to use?", a: "Yes, basic features are free. You can use the journal and risk calculator without limits." },
+        { q: "Which markets are supported?", a: "Get Smart Log is universal. You can record trades from Crypto, Forex, or Stock markets." },
+        { q: "Is my data safe?", a: "We take security seriously. Your trading data is encrypted and never shared with third parties." },
+        { q: "How does AI analysis work?", a: "We use Gemini AI to analyze your entries. It evaluates technical and psychological aspects to give advice." }
+      ];
+    }
+  };
+
+  const faqData = getFaqData();
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200 selection:bg-blue-500 selection:text-white">
@@ -46,7 +81,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
                 onClick={onStart}
                 className="hidden md:block text-sm font-semibold text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
               >
-                Войти
+                {t.nav.login}
               </button>
               
               {/* Burger Button */}
@@ -57,14 +92,30 @@ const LandingPage: React.FC<LandingPageProps> = ({
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
 
-              {/* Theme Toggle Button - Right of Burger */}
+              {/* Theme Toggle Button */}
               <button
                 onClick={toggleTheme}
                 className="p-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
-                aria-label={isDarkMode ? "Включить светлую тему" : "Включить темную тему"}
+                aria-label={isDarkMode ? t.sidebar.themeLight : t.sidebar.themeDark}
               >
                 {isDarkMode ? <Sun size={24} /> : <Moon size={24} />}
               </button>
+
+              {/* Language Switcher */}
+              <div className="relative group">
+                <select
+                  value={language}
+                  onChange={(e) => setLanguage(e.target.value as Language)}
+                  className="appearance-none bg-transparent font-bold text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 py-2 pl-3 pr-8 rounded-lg cursor-pointer outline-none transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+                >
+                  <option value="ru" className="bg-white dark:bg-slate-900">RU</option>
+                  <option value="ua" className="bg-white dark:bg-slate-900">UA</option>
+                  <option value="en" className="bg-white dark:bg-slate-900">EN</option>
+                </select>
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500">
+                  <Languages size={14} />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -78,7 +129,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
                 className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
                 onClick={() => setIsMenuOpen(false)}
               >
-                Главная
+                {t.nav.home}
               </a>
               <button 
                 className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
@@ -87,7 +138,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
                   onNavigateToPricing();
                 }}
               >
-                Цены
+                {t.nav.pricing}
               </button>
               <button 
                 className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
@@ -96,7 +147,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
                   onNavigateToBlog();
                 }}
               >
-                Блог
+                {t.nav.blog}
               </button>
               <button 
                 className="text-2xl font-bold text-slate-800 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors" 
@@ -105,7 +156,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
                   onNavigateToContacts();
                 }}
               >
-                Контакты
+                {t.nav.contacts}
               </button>
             </div>
             
@@ -117,7 +168,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
                 }}
                 className="w-full max-w-md mx-auto block py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-lg shadow-lg shadow-blue-600/20 transition-all hover:scale-[1.02]"
               >
-                Войти в кабинет
+                {t.nav.cabinet}
               </button>
             </div>
           </div>
@@ -129,20 +180,20 @@ const LandingPage: React.FC<LandingPageProps> = ({
         <div className="max-w-5xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-sm font-medium mb-8">
             <TrendingUp size={16} />
-            <span>Торговый ассистент на базе ИИ</span>
+            <span>AI Trading Assistant</span>
           </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
-            Торгуйте разумно <br /> с поддержкой ИИ
+          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 whitespace-pre-line">
+            {t.landing.heroTitle}
           </h1>
           <p className="text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Ваш персональный торговый хаб: профессиональный дневник, умный риск-менеджмент и анализ сделок с помощью Gemini AI.
+            {t.landing.heroSubtitle}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <button
               onClick={onStart}
               className="px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all hover:scale-105 shadow-lg shadow-blue-600/20"
             >
-              Начать бесплатно <ArrowRight size={20} />
+              {t.nav.start} <ArrowRight size={20} />
             </button>
           </div>
         </div>
@@ -154,23 +205,23 @@ const LandingPage: React.FC<LandingPageProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
               <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">
-                Систематизируйте успех с передовыми инструментами
+                {t.landing.seoTitle}
               </h2>
               <p className="text-lg text-slate-600 dark:text-slate-400">
-                Get Smart Log — это не просто журнал сделок, это комплексная экосистема для трейдеров любого уровня. Наша платформа помогает выявлять паттерны в вашем поведении, минимизировать эмоциональные ошибки и оптимизировать стратегию с помощью машинного обучения.
+                {t.landing.seoText}
               </p>
               <ul className="space-y-4 text-slate-600 dark:text-slate-400">
                 <li className="flex gap-3">
                   <div className="mt-1 min-w-[20px]"><CheckCircle2 className="text-blue-500" size={20} /></div>
-                  <p>Глубокая аналитика каждой сделки для понимания ваших сильных и слабых сторон.</p>
+                  <p>{t.landing.seoList1}</p>
                 </li>
                 <li className="flex gap-3">
                   <div className="mt-1 min-w-[20px]"><CheckCircle2 className="text-blue-500" size={20} /></div>
-                  <p>Интеграция с искусственным интеллектом Gemini для получения второго мнения в реальном времени.</p>
+                  <p>{t.landing.seoList2}</p>
                 </li>
                 <li className="flex gap-3">
                   <div className="mt-1 min-w-[20px]"><CheckCircle2 className="text-blue-500" size={20} /></div>
-                  <p>Полная конфиденциальность ваших данных и безопасность торговых стратегий.</p>
+                  <p>{t.landing.seoList3}</p>
                 </li>
               </ul>
               <div className="pt-6">
@@ -178,7 +229,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
                   href="#features"
                   className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold text-lg transition-transform hover:scale-105 shadow-lg shadow-blue-600/20"
                 >
-                  Подробнее...
+                  {t.common.readMore}
                 </a>
               </div>
             </div>
@@ -200,70 +251,52 @@ const LandingPage: React.FC<LandingPageProps> = ({
       <section id="features" className="py-20 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {/* Feature 1 */}
             <div className="p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-500/50 transition-colors shadow-sm">
               <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center mb-6">
                 <BookOpen size={24} />
               </div>
-              <h3 className="text-xl font-bold mb-3">Торговый Дневник</h3>
-              <p className="text-slate-600 dark:text-slate-400">
-                Записывайте каждую сделку. Анализируйте входы, выходы и причины. Структурируйте свой опыт для роста.
-              </p>
+              <h3 className="text-xl font-bold mb-3">{t.landing.features.journal.title}</h3>
+              <p className="text-slate-600 dark:text-slate-400">{t.landing.features.journal.desc}</p>
             </div>
 
-            {/* Feature 2 */}
             <div className="p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 transition-colors shadow-sm">
               <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl flex items-center justify-center mb-6">
                 <Calculator size={24} />
               </div>
-              <h3 className="text-xl font-bold mb-3">Риск-Менеджер</h3>
-              <p className="text-slate-600 dark:text-slate-400">
-                Мгновенный расчет позиции. Контролируйте риски и сохраняйте депозит с помощью встроенного калькулятора.
-              </p>
+              <h3 className="text-xl font-bold mb-3">{t.landing.features.risk.title}</h3>
+              <p className="text-slate-600 dark:text-slate-400">{t.landing.features.risk.desc}</p>
             </div>
 
-            {/* Feature 3 */}
             <div className="p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-purple-500/50 transition-colors shadow-sm">
               <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-xl flex items-center justify-center mb-6">
                 <BrainCircuit size={24} />
               </div>
-              <h3 className="text-xl font-bold mb-3">AI Аналитик</h3>
-              <p className="text-slate-600 dark:text-slate-400">
-                Получайте объективную критику сделок и советы от искусственного интеллекта Gemini.
-              </p>
+              <h3 className="text-xl font-bold mb-3">{t.landing.features.ai.title}</h3>
+              <p className="text-slate-600 dark:text-slate-400">{t.landing.features.ai.desc}</p>
             </div>
 
-            {/* Feature 4 */}
             <div className="p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-orange-500/50 transition-colors shadow-sm">
               <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-xl flex items-center justify-center mb-6">
                 <LineChart size={24} />
               </div>
-              <h3 className="text-xl font-bold mb-3">Графики доходности</h3>
-              <p className="text-slate-600 dark:text-slate-400">
-                Визуализируйте свой прогресс. Понятные интерактивные графики PnL и винрейта помогут отследить динамику и скорректировать стратегию.
-              </p>
+              <h3 className="text-xl font-bold mb-3">{t.landing.features.chart.title}</h3>
+              <p className="text-slate-600 dark:text-slate-400">{t.landing.features.chart.desc}</p>
             </div>
 
-            {/* Feature 5 */}
             <div className="p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-cyan-500/50 transition-colors shadow-sm">
               <div className="w-12 h-12 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-400 rounded-xl flex items-center justify-center mb-6">
                 <Globe size={24} />
               </div>
-              <h3 className="text-xl font-bold mb-3">Все популярные биржи</h3>
-              <p className="text-slate-600 dark:text-slate-400">
-                Универсальная поддержка тикеров. Записывайте сделки с Binance, Bybit, OKX и других популярных платформ в одном месте.
-              </p>
+              <h3 className="text-xl font-bold mb-3">{t.landing.features.exchanges.title}</h3>
+              <p className="text-slate-600 dark:text-slate-400">{t.landing.features.exchanges.desc}</p>
             </div>
 
-            {/* Feature 6 */}
             <div className="p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-pink-500/50 transition-colors shadow-sm">
               <div className="w-12 h-12 bg-pink-100 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400 rounded-xl flex items-center justify-center mb-6">
                 <Smartphone size={24} />
               </div>
-              <h3 className="text-xl font-bold mb-3">Адаптивный интерфейс</h3>
-              <p className="text-slate-600 dark:text-slate-400">
-                Торгуйте и анализируйте где угодно. Полная функциональность приложения доступна на компьютере, планшете и смартфоне.
-              </p>
+              <h3 className="text-xl font-bold mb-3">{t.landing.features.mobile.title}</h3>
+              <p className="text-slate-600 dark:text-slate-400">{t.landing.features.mobile.desc}</p>
             </div>
           </div>
         </div>
@@ -277,36 +310,11 @@ const LandingPage: React.FC<LandingPageProps> = ({
               <HelpCircle size={16} />
               <span>FAQ</span>
             </div>
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Часто задаваемые вопросы</h2>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">{t.landing.faqTitle}</h2>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {[
-              {
-                q: "Можно ли пользоваться бесплатно?",
-                a: "Да, базовый функционал доступен бесплатно. Вы можете вести дневник и пользоваться калькулятором риска без ограничений."
-              },
-              {
-                q: "Какие рынки поддерживаются?",
-                a: "Get Smart Log универсален. Вы можете записывать сделки с криптовалютных бирж, Форекса или фондового рынка."
-              },
-              {
-                q: "Безопасны ли мои данные?",
-                a: "Мы серьезно относимся к безопасности. Ваши торговые данные хранятся в зашифрованном виде и не передаются третьим лицам."
-              },
-              {
-                q: "Как работает ИИ-анализ?",
-                a: "Мы используем Gemini AI для анализа ваших записей. Он оценивает технические и психологические аспекты сделки, давая советы."
-              },
-              {
-                q: "Есть ли мобильная версия?",
-                a: "Наш сервис полностью адаптивен (PWA). Вы можете комфортно пользоваться им в браузере на смартфоне или планшете."
-              },
-              {
-                q: "Можно ли подключить биржу по API?",
-                a: "В данный момент мы поддерживаем ручной ввод для осознанности, но автоматический импорт уже в разработке."
-              }
-            ].map((item, idx) => (
+            {faqData.map((item, idx) => (
               <div key={idx} className="bg-slate-50 dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
                 <h3 className="font-bold text-lg mb-3 text-slate-900 dark:text-white">{item.q}</h3>
                 <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">{item.a}</p>
@@ -332,21 +340,25 @@ const LandingPage: React.FC<LandingPageProps> = ({
                 <span className="text-xl font-bold text-slate-900 dark:text-white">Get Smart Log</span>
               </div>
               <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
-                Ваш надежный партнер в мире трейдинга. Анализируйте, учитесь и зарабатывайте с помощью передовых технологий.
+                {language === 'ru' 
+                 ? 'Ваш надежный партнер в мире трейдинга. Анализируйте, учитесь и зарабатывайте с помощью передовых технологий.'
+                 : language === 'ua'
+                 ? 'Ваш надійний партнер у світі трейдингу. Аналізуйте, навчайтеся та заробляйте за допомогою передових технологій.'
+                 : 'Your trusted partner in the world of trading. Analyze, learn, and earn with advanced technologies.'}
               </p>
             </div>
 
             {/* Menu Links */}
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Меню</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">{t.nav.menu}</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Главная</a></li>
+                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{t.nav.home}</a></li>
                 <li>
                   <button 
                     onClick={onNavigateToPricing}
                     className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
-                    Цены
+                    {t.nav.pricing}
                   </button>
                 </li>
                 <li>
@@ -354,7 +366,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
                     onClick={onNavigateToBlog}
                     className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
-                    Блог
+                    {t.nav.blog}
                   </button>
                 </li>
                 <li>
@@ -362,7 +374,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
                     onClick={onNavigateToContacts}
                     className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
-                    Контакты
+                    {t.nav.contacts}
                   </button>
                 </li>
               </ul>
@@ -370,14 +382,14 @@ const LandingPage: React.FC<LandingPageProps> = ({
 
             {/* Legal Links */}
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Документы</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">{t.nav.docs}</h3>
               <ul className="space-y-3">
                 <li>
                   <button 
                     onClick={onNavigateToPublicOffer}
                     className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
-                    Публичная оферта
+                    {t.nav.offer}
                   </button>
                 </li>
                 <li>
@@ -385,16 +397,16 @@ const LandingPage: React.FC<LandingPageProps> = ({
                     onClick={onNavigateToPrivacyPolicy}
                     className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left"
                   >
-                    Политика конфиденциальности
+                     {t.nav.privacy}
                   </button>
                 </li>
-                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Карта сайта</a></li>
+                <li><a href="#" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{t.nav.map}</a></li>
               </ul>
             </div>
 
             {/* Contacts */}
             <div>
-              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">Контакты</h3>
+              <h3 className="font-bold text-slate-900 dark:text-white mb-4 text-lg">{t.nav.contacts}</h3>
               <ul className="space-y-3">
                 <li className="flex items-center gap-3 text-slate-500 dark:text-slate-400">
                   <Mail size={16} className="text-blue-500" />
@@ -410,7 +422,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
 
           {/* Bottom Bar */}
           <div className="border-t border-slate-200 dark:border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-500 dark:text-slate-500">
-            <p>&copy; {new Date().getFullYear()} Get Smart Log. Все права защищены.</p>
+            <p>&copy; {new Date().getFullYear()} Get Smart Log. {t.common.rights}</p>
             <div className="flex gap-6">
               {/* Social icons could go here */}
             </div>
