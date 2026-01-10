@@ -30,6 +30,14 @@ export interface RiskCalculationResult {
   riskRewardRatio: number;
 }
 
-export type ViewState = 'HOME' | 'DASHBOARD' | 'JOURNAL' | 'RISK_CALC' | 'AI_ANALYSIS' | 'SETTINGS';
+export interface ExchangeConnection {
+  id: string;
+  exchange: 'Binance' | 'Bybit' | 'OKX' | 'KuCoin' | 'Bitget' | 'Other';
+  name: string;
+  apiKey: string; // Storing masked or full key depending on security requirements (demo: full)
+  createdAt: string;
+}
+
+export type ViewState = 'HOME' | 'DASHBOARD' | 'JOURNAL' | 'RISK_CALC' | 'AI_ANALYSIS' | 'EXCHANGE_CONNECT' | 'SETTINGS';
 
 export type Language = 'ru' | 'en' | 'ua';
