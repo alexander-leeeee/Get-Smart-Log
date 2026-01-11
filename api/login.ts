@@ -13,11 +13,17 @@ export default async function handler(req: any, res: any) {
       `;
 
       if (users.length > 0) {
-        // Если нашли, возвращаем данные пользователя
+        const dbUser = users[0];
+        
         return res.status(200).json({ 
           message: 'Login successful', 
-          user: users[0] 
+          user: {
+            id: dbUser.id,
+            name: dbUser.name,
+            email: dbUser.email
+          }
         });
+      
       } else {
         return res.status(401).json({ error: 'Неверный email или пароль' });
       }
