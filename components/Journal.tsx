@@ -53,7 +53,7 @@ const Journal: React.FC<JournalProps> = ({ trades, setTrades, user }) => {
   };
 
 const handleSyncHistory = async () => {
-  console.log("Текущий пользователь:", user); // Добавьте это
+  console.log("Текущий пользователь:", user);
   if (!user?.id) return alert("Ошибка: ID пользователя не найден");
   
   setIsSyncing(true);
@@ -69,10 +69,9 @@ const handleSyncHistory = async () => {
     const data = await response.json();
     
     if (response.ok) {
-      alert(`Успешно! ${data.message}`);
-      // Здесь в будущем мы добавим автоматическое обновление списка сделок
+      console.log(`Синхронизация: ${data.message}`); // Оставляем только в консоли для проверки
     } else {
-      alert(`Ошибка: ${data.error}`);
+      alert(`Ошибка: ${data.error}`); // Ошибки лучше оставить, чтобы знать, если API упадет
     }
   } catch (err) {
     alert('Ошибка связи с сервером');
