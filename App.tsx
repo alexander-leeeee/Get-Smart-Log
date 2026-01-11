@@ -168,7 +168,7 @@ const App: React.FC = () => {
       <main className="flex-1 md:ml-64 p-4 md:p-8 pt-20 md:pt-8 transition-all">
         {currentView === 'HOME' && <HomePage user={user} onNavigate={setCurrentView} />}
         {currentView === 'DASHBOARD' && <Dashboard trades={trades} />}
-        {currentView === 'JOURNAL' && <Journal trades={trades} setTrades={setTrades} />}
+        {currentView === 'JOURNAL' && <Journal trades={trades} setTrades={setTrades} user={user} />}
         {currentView === 'RISK_CALC' && <RiskManager />}
         {currentView === 'AI_ANALYSIS' && <AIAnalyzer />}
         {currentView === 'EXCHANGE_CONNECT' && <ExchangeConnect language={language} user={user} />}
