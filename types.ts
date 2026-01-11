@@ -18,6 +18,7 @@ export interface Trade {
 }
 
 export interface User {
+  id: number | string;
   username: string;
   isAuthenticated: boolean;
 }
