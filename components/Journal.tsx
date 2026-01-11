@@ -53,6 +53,7 @@ const Journal: React.FC<JournalProps> = ({ trades, setTrades, user }) => {
   };
 
 const handleSyncHistory = async () => {
+  console.log("Текущий пользователь:", user); // Добавьте это
   if (!user?.id) return alert("Ошибка: ID пользователя не найден");
   
   setIsSyncing(true);
