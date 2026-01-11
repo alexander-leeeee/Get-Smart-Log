@@ -6,18 +6,17 @@ export default async function handler(req: any, res: any) {
   const { userId, connectionId, loadHistory } = req.body; 
 
   try {
-    // Ищем конкретные ключи по ID подключения
     const connection = await sql`
       SELECT api_key, api_secret, exchange_name 
       FROM api_keys 
-      WHERE id = ${connectionId} AND user_id = ${userId}
+      WHERE user_id = ${userId} 
+      LIMIT 1
     `;
 
     if (connection.length === 0) return res.status(404).json({ error: 'Подключение не найдено' });
 
     const { api_key, api_secret, exchange_name } = connection[0];
 
-    // Динамически выбираем биржу (binance, bybit и т.д.) через CCXT
     const exchange = new (ccxt as any)[exchange_name]({
       apiKey: api_key,
       secret: api_secret,
