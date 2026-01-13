@@ -1,6 +1,6 @@
 import React from 'react';
 import { LayoutDashboard, BookOpen, Calculator, BrainCircuit, LogOut, Settings, Moon, Sun, Home, Languages, Link2 } from 'lucide-react';
-import { ViewState, Language } from '../types';
+import { ViewState, Language, MarketType } from '../types';
 import { translations } from '../utils/translations';
 
 interface SidebarProps {
@@ -11,9 +11,21 @@ interface SidebarProps {
   toggleTheme: () => void;
   language: Language;
   setLanguage: (lang: Language) => void;
+  marketType: MarketType;
+  setMarketType: (type: MarketType) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, onLogout, isDarkMode, toggleTheme, language, setLanguage }) => {
+const Sidebar: React.FC<SidebarProps> = ({ 
+  currentView, 
+  onChangeView, 
+  onLogout, 
+  isDarkMode, 
+  toggleTheme, 
+  language, 
+  setLanguage,
+  marketType,
+  setMarketType
+}) => {
   const t = translations[language].sidebar;
 
   const menuItems = [
@@ -34,6 +46,30 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, onChangeView, onLogout, 
           className="h-8 w-auto rounded-lg" 
         />
         <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">Get Smart Log</h1>
+      </div>
+
+      {/* Spot / Futures Toggle */}
+      <div className="bg-slate-100 dark:bg-slate-800 p-1 rounded-xl flex mb-6 mx-1">
+        <button
+          onClick={() => setMarketType('SPOT')}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
+            marketType === 'SPOT'
+              ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+          }`}
+        >
+          <Coins size={14} /> Spot
+        </button>
+        <button
+          onClick={() => setMarketType('FUTURES')}
+          className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-bold transition-all duration-200 ${
+            marketType === 'FUTURES'
+              ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm'
+              : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+          }`}
+        >
+          <TrendingUp size={14} /> Futures
+        </button>
       </div>
 
       <nav className="flex-1 space-y-2">
