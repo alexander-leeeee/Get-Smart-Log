@@ -1,66 +1,120 @@
 
 import React, { useState, useEffect } from 'react';
 import { Trade } from '../types';
-import { Shield, AlertTriangle, Lock, Unlock, Save, RefreshCw, AlertOctagon } from 'lucide-react';
+import { Shield, Lock, Unlock, Save, AlertOctagon, Target, DollarSign, Percent, TrendingUp, AlertTriangle, ShieldCheck } from 'lucide-react';
 
 interface RiskManagerProps {
   trades: Trade[];
 }
 
+type LimitType = 'USD' | 'PERCENT';
+
 interface RiskSettings {
+  // Убыток
   maxDailyLoss: number;
+  dailyLossType: LimitType;
+  
+  // Прибыль
+  maxDailyProfit: number; // 0 = выключено
+  dailyProfitType: LimitType;
+
+  // Сделки
   maxDailyTrades: number;
-  maxRiskPerTradePercent: number;
 }
 
 const RiskManager: React.FC<RiskManagerProps> = ({ trades }) => {
-  // Load settings from local storage or default
+  // 1. Получаем депозит для расчетов процентов
+  const [deposit, setDeposit] = useState<number>(() => {
+    const savedBalance = localStorage.getItem('tm_initial_balance');
+    return savedBalance ? parseFloat(savedBalance) : 1000;
+  });
+
+  // 2. Настройки риск-менеджмента
   const [settings, setSettings] = useState<RiskSettings>(() => {
-    const saved = localStorage.getItem('tm_risk_settings');
-    return saved ? JSON.parse(saved) : {
-      maxDailyLoss: 100, // $
+    const saved = localStorage.getItem('tm_risk_settings_v2');
+    if (saved) return JSON.parse(saved);
+    
+    // Миграция со старой версии или дефолт
+    return {
+      maxDailyLoss: 5, // 5% по дефолту безопаснее
+      dailyLossType: 'PERCENT',
+      maxDailyProfit: 0,
+      dailyProfitType: 'PERCENT',
       maxDailyTrades: 5,
-      maxRiskPerTradePercent: 1
     };
   });
 
   const [isEditing, setIsEditing] = useState(false);
   const [tempSettings, setTempSettings] = useState<RiskSettings>(settings);
 
-  // Stats for TODAY
+  // 3. Статистика за сегодня
   const [dailyStats, setDailyStats] = useState({
     pnl: 0,
     tradesCount: 0,
     isLossLimitBreached: false,
-    isTradesLimitBreached: false
+    isProfitLimitReached: false,
+    isTradesLimitBreached: false,
+    lossLimitValueMoney: 0, // Абсолютное значение лимита в $
+    profitLimitValueMoney: 0 // Абсолютное значение лимита в $
   });
 
   useEffect(() => {
-    // Determine "Today" (Using local date string match for simplicity 'YYYY-MM-DD')
     const todayStr = new Date().toISOString().split('T')[0];
-    
-    // Filter trades for today
     const todaysTrades = trades.filter(t => t.date === todayStr);
     
     const pnl = todaysTrades.reduce((acc, t) => acc + t.pnl, 0);
     const count = todaysTrades.length;
 
+    // Расчет абсолютных значений лимитов
+    const lossLimitMoney = settings.dailyLossType === 'PERCENT' 
+      ? (deposit * (settings.maxDailyLoss / 100)) 
+      : settings.maxDailyLoss;
+
+    const profitLimitMoney = settings.dailyProfitType === 'PERCENT'
+      ? (deposit * (settings.maxDailyProfit / 100))
+      : settings.maxDailyProfit;
+
     setDailyStats({
       pnl,
       tradesCount: count,
-      isLossLimitBreached: pnl <= -Math.abs(settings.maxDailyLoss),
-      isTradesLimitBreached: count >= settings.maxDailyTrades
+      lossLimitValueMoney: lossLimitMoney,
+      profitLimitValueMoney: profitLimitMoney,
+      // Убыток: PnL меньше или равен отрицательному лимиту
+      isLossLimitBreached: pnl <= -Math.abs(lossLimitMoney) && lossLimitMoney > 0,
+      // Прибыль: PnL больше или равен лимиту (если лимит задан > 0)
+      isProfitLimitReached: settings.maxDailyProfit > 0 && pnl >= profitLimitMoney,
+      isTradesLimitBreached: settings.maxDailyTrades > 0 && count >= settings.maxDailyTrades
     });
 
-  }, [trades, settings]);
+  }, [trades, settings, deposit]);
 
   const handleSave = () => {
     setSettings(tempSettings);
-    localStorage.setItem('tm_risk_settings', JSON.stringify(tempSettings));
+    localStorage.setItem('tm_risk_settings_v2', JSON.stringify(tempSettings));
     setIsEditing(false);
   };
 
-  const tradingLocked = dailyStats.isLossLimitBreached || dailyStats.isTradesLimitBreached;
+  const tradingLocked = dailyStats.isLossLimitBreached || dailyStats.isTradesLimitBreached || dailyStats.isProfitLimitReached;
+
+  // Компонент переключателя типа (USD / %)
+  const TypeToggle = ({ type, onChange }: { type: LimitType, onChange: (t: LimitType) => void }) => (
+    <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1 ml-2">
+      <button
+        type="button"
+        onClick={() => onChange('USD')}
+        className={`px-3 py-1 rounded-md text-sm font-bold transition-all ${type === 'USD' ? 'bg-white dark:bg-slate-600 shadow text-blue-600 dark:text-blue-400' : 'text-slate-400 hover:text-slate-600'}`}
+      >
+        <DollarSign size={14} />
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange('PERCENT')}
+        className={`px-3 py-1 rounded-md text-sm font-bold transition-all ${type === 'PERCENT' ? 'bg-white dark:bg-slate-600 shadow text-blue-600 dark:text-blue-400' : 'text-slate-400 hover:text-slate-600'}`}
+      >
+        <Percent size={14} />
+      </button>
+    </div>
+  );
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -70,71 +124,117 @@ const RiskManager: React.FC<RiskManagerProps> = ({ trades }) => {
         <div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Shield className="text-blue-600 dark:text-blue-400" />
-            Контроль Рисков
+            Риск-Менеджер
           </h2>
-          <p className="text-slate-500 dark:text-slate-400">
-            Автоматическое ограничение торговли при достижении лимитов.
+          <p className="text-slate-500 dark:text-slate-400 text-sm">
+            Депозит: <span className="font-mono font-bold text-slate-700 dark:text-slate-300">${deposit}</span> (из настроек дашборда)
           </p>
         </div>
         
-        <div className={`px-4 py-2 rounded-lg font-bold flex items-center gap-2 ${tradingLocked ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'}`}>
+        <div className={`px-4 py-2 rounded-lg font-bold flex items-center gap-2 border ${tradingLocked 
+          ? dailyStats.isProfitLimitReached 
+            ? 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800' // Profit Lock
+            : 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800' // Loss Lock
+          : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700' // Unlocked
+        }`}>
           {tradingLocked ? <Lock size={20} /> : <Unlock size={20} />}
-          {tradingLocked ? 'ТОРГОВЛЯ ЗАПРЕЩЕНА' : 'ТОРГОВЛЯ РАЗРЕШЕНА'}
+          {tradingLocked 
+            ? dailyStats.isProfitLimitReached 
+                ? 'ЦЕЛЬ ВЫПОЛНЕНА (STOP)' 
+                : 'ТОРГОВЛЯ ОСТАНОВЛЕНА' 
+            : 'ТОРГОВЛЯ РАЗРЕШЕНА'}
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        {/* Left Column: Status Dashboard */}
+        {/* Left Column: Visual Status */}
         <div className="space-y-6">
-          {/* Daily PnL Card */}
+          
+          {/* 1. Loss Limit Card */}
           <div className={`p-6 rounded-2xl border shadow-sm transition-colors ${dailyStats.isLossLimitBreached ? 'bg-red-50 border-red-200 dark:bg-red-900/10 dark:border-red-800' : 'bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-800'}`}>
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="text-slate-500 dark:text-slate-400 font-medium">PnL за сегодня</h3>
+                <h3 className="text-slate-500 dark:text-slate-400 font-medium text-sm uppercase tracking-wide">Текущий результат</h3>
                 <div className={`text-4xl font-bold mt-1 ${dailyStats.pnl >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                   {dailyStats.pnl >= 0 ? '+' : ''}{dailyStats.pnl.toFixed(2)} $
                 </div>
               </div>
-              {dailyStats.isLossLimitBreached && (
-                <AlertOctagon className="text-red-500 animate-pulse" size={32} />
-              )}
+              {dailyStats.isLossLimitBreached && <AlertOctagon className="text-red-500 animate-pulse" size={32} />}
             </div>
             
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-slate-600 dark:text-slate-300">Лимит убытка:</span>
-                <span className="font-mono font-bold text-red-600 dark:text-red-400">-{settings.maxDailyLoss} $</span>
+                <span className="text-slate-600 dark:text-slate-400">Лимит убытка:</span>
+                <span className="font-mono font-bold text-red-600 dark:text-red-400">
+                  -{dailyStats.lossLimitValueMoney.toFixed(2)} $ 
+                  <span className="text-xs text-slate-400 font-normal ml-1">
+                     ({settings.dailyLossType === 'PERCENT' ? `${settings.maxDailyLoss}%` : 'FIX'})
+                  </span>
+                </span>
               </div>
-              {/* Progress Bar for Loss */}
-              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
+              
+              {/* Progress Bar Loss */}
+              <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden relative">
+                {/* Zero Line Marker */}
+                <div className="absolute left-0 h-full w-[1px] bg-slate-400 z-10"></div>
                 <div 
                   className={`h-full rounded-full transition-all duration-500 ${dailyStats.pnl < 0 ? 'bg-red-500' : 'bg-emerald-500'}`}
-                  style={{ width: `${Math.min(Math.abs(dailyStats.pnl) / settings.maxDailyLoss * 100, 100)}%` }}
+                  style={{ width: `${dailyStats.pnl < 0 ? Math.min((Math.abs(dailyStats.pnl) / dailyStats.lossLimitValueMoney) * 100, 100) : 0}%` }}
                 ></div>
               </div>
-              <p className="text-xs text-slate-400 text-right">
-                {dailyStats.pnl < 0 
-                  ? `${Math.min(Math.abs(dailyStats.pnl) / settings.maxDailyLoss * 100, 100).toFixed(0)}% от лимита` 
-                  : 'В прибыли'}
-              </p>
+              {dailyStats.pnl < 0 && (
+                 <p className="text-xs text-slate-400 text-right">
+                    Использовано {((Math.abs(dailyStats.pnl) / dailyStats.lossLimitValueMoney) * 100).toFixed(1)}% лимита риска
+                 </p>
+              )}
             </div>
           </div>
 
-          {/* Daily Trades Count Card */}
+          {/* 2. Profit Goal Card */}
+          {settings.maxDailyProfit > 0 && (
+            <div className={`p-6 rounded-2xl border shadow-sm transition-colors ${dailyStats.isProfitLimitReached ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-900/10 dark:border-emerald-800' : 'bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-800'}`}>
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-2">
+                    <Target className="text-emerald-500" size={24} />
+                    <h3 className="text-slate-500 dark:text-slate-400 font-medium">Цель на день</h3>
+                </div>
+                {dailyStats.isProfitLimitReached && <ShieldCheck className="text-emerald-500" size={32} />}
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                    <span className="text-slate-600 dark:text-slate-400">Цель:</span>
+                    <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                        +{dailyStats.profitLimitValueMoney.toFixed(2)} $
+                        <span className="text-xs text-slate-400 font-normal ml-1">
+                            ({settings.dailyProfitType === 'PERCENT' ? `${settings.maxDailyProfit}%` : 'FIX'})
+                        </span>
+                    </span>
+                </div>
+                {/* Progress Bar Profit */}
+                 <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
+                    <div 
+                      className="h-full rounded-full transition-all duration-500 bg-emerald-500"
+                      style={{ width: `${dailyStats.pnl > 0 ? Math.min((dailyStats.pnl / dailyStats.profitLimitValueMoney) * 100, 100) : 0}%` }}
+                    ></div>
+                 </div>
+                 <p className="text-xs text-slate-400 text-right">
+                    {dailyStats.pnl > 0 ? ((dailyStats.pnl / dailyStats.profitLimitValueMoney) * 100).toFixed(1) : 0}% от цели
+                 </p>
+              </div>
+            </div>
+          )}
+
+          {/* 3. Trades Count Card */}
           <div className={`p-6 rounded-2xl border shadow-sm transition-colors ${dailyStats.isTradesLimitBreached ? 'bg-orange-50 border-orange-200 dark:bg-orange-900/10 dark:border-orange-800' : 'bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-800'}`}>
             <div className="flex justify-between items-start mb-4">
-              <div>
-                <h3 className="text-slate-500 dark:text-slate-400 font-medium">Сделок за сегодня</h3>
-                <div className="text-4xl font-bold mt-1 text-slate-900 dark:text-white">
-                  {dailyStats.tradesCount} <span className="text-lg text-slate-400 font-normal">/ {settings.maxDailyTrades}</span>
-                </div>
+              <h3 className="text-slate-500 dark:text-slate-400 font-medium">Количество сделок</h3>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                {dailyStats.tradesCount} <span className="text-lg text-slate-400 font-normal">/ {settings.maxDailyTrades}</span>
               </div>
-               {dailyStats.isTradesLimitBreached && (
-                <AlertTriangle className="text-orange-500" size={32} />
-              )}
             </div>
-             <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-3 overflow-hidden">
+             <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
                 <div 
                   className={`h-full rounded-full transition-all duration-500 ${dailyStats.isTradesLimitBreached ? 'bg-orange-500' : 'bg-blue-500'}`}
                   style={{ width: `${Math.min(dailyStats.tradesCount / settings.maxDailyTrades * 100, 100)}%` }}
@@ -143,50 +243,100 @@ const RiskManager: React.FC<RiskManagerProps> = ({ trades }) => {
           </div>
         </div>
 
-        {/* Right Column: Settings */}
-        <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        {/* Right Column: Settings Form */}
+        <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm h-fit">
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Настройки лимитов</h3>
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">Правила остановки</h3>
             {!isEditing && (
               <button 
                 onClick={() => { setTempSettings(settings); setIsEditing(true); }}
                 className="text-blue-600 dark:text-blue-400 text-sm font-semibold hover:underline"
               >
-                Изменить
+                Настроить
               </button>
             )}
           </div>
 
           <div className="space-y-6">
+            
+            {/* Setting: Max Loss */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Макс. дневной убыток ($)
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
+                <AlertOctagon size={16} className="text-red-500" />
+                Остановка при убытке
               </label>
-              <div className="relative">
-                <input
-                  type="number"
-                  disabled={!isEditing}
-                  value={isEditing ? tempSettings.maxDailyLoss : settings.maxDailyLoss}
-                  onChange={(e) => setTempSettings({...tempSettings, maxDailyLoss: Math.abs(parseFloat(e.target.value)) || 0})}
-                  className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 pl-10 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-                />
-                <span className="absolute left-4 top-3.5 text-slate-400 font-bold">$</span>
+              <div className="flex items-center">
+                <div className="relative flex-1">
+                    <input
+                      type="number"
+                      disabled={!isEditing}
+                      value={isEditing ? tempSettings.maxDailyLoss : settings.maxDailyLoss}
+                      onChange={(e) => setTempSettings({...tempSettings, maxDailyLoss: Math.abs(parseFloat(e.target.value)) || 0})}
+                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60 transition-colors"
+                    />
+                </div>
+                {isEditing ? (
+                  <TypeToggle 
+                    type={tempSettings.dailyLossType} 
+                    onChange={(t) => setTempSettings({...tempSettings, dailyLossType: t})} 
+                  />
+                ) : (
+                  <span className="ml-3 font-bold text-slate-500 w-8 text-center">
+                    {settings.dailyLossType === 'USD' ? '$' : '%'}
+                  </span>
+                )}
               </div>
-              <p className="text-xs text-slate-500 mt-1">Торговля блокируется, если дневной PnL опустится ниже этого значения.</p>
+              <p className="text-xs text-slate-500 mt-1">
+                 Блокировка при потере {settings.maxDailyLoss}{settings.dailyLossType === 'USD' ? '$' : '%'} за день.
+              </p>
             </div>
 
+            {/* Setting: Max Profit */}
             <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                Макс. кол-во сделок в день
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
+                <Target size={16} className="text-emerald-500" />
+                Цель по прибыли (Take Profit)
+              </label>
+              <div className="flex items-center">
+                <div className="relative flex-1">
+                    <input
+                      type="number"
+                      disabled={!isEditing}
+                      value={isEditing ? tempSettings.maxDailyProfit : settings.maxDailyProfit}
+                      onChange={(e) => setTempSettings({...tempSettings, maxDailyProfit: Math.abs(parseFloat(e.target.value)) || 0})}
+                      className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60 transition-colors"
+                    />
+                </div>
+                {isEditing ? (
+                   <TypeToggle 
+                    type={tempSettings.dailyProfitType} 
+                    onChange={(t) => setTempSettings({...tempSettings, dailyProfitType: t})} 
+                  />
+                ) : (
+                   <span className="ml-3 font-bold text-slate-500 w-8 text-center">
+                    {settings.dailyProfitType === 'USD' ? '$' : '%'}
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                 0 = отключить. Остановка для сохранения профита.
+              </p>
+            </div>
+
+            {/* Setting: Max Trades */}
+            <div>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2 flex items-center gap-2">
+                <TrendingUp size={16} className="text-blue-500" />
+                Лимит количества сделок
               </label>
               <input
                 type="number"
                 disabled={!isEditing}
                 value={isEditing ? tempSettings.maxDailyTrades : settings.maxDailyTrades}
                 onChange={(e) => setTempSettings({...tempSettings, maxDailyTrades: Math.abs(parseInt(e.target.value)) || 0})}
-                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-3 text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60 transition-colors"
               />
-               <p className="text-xs text-slate-500 mt-1">Защита от овертрейдинга (тильта).</p>
+               <p className="text-xs text-slate-500 mt-1">Защита от овертрейдинга.</p>
             </div>
             
             {isEditing && (
@@ -211,11 +361,21 @@ const RiskManager: React.FC<RiskManagerProps> = ({ trades }) => {
       </div>
 
       {tradingLocked && (
-        <div className="bg-red-600 text-white p-6 rounded-2xl shadow-lg animate-bounce duration-1000 flex items-center justify-center gap-4 text-center">
-            <Lock size={48} />
+        <div className={`p-6 rounded-2xl shadow-lg animate-bounce duration-1000 flex items-center justify-center gap-4 text-center ${
+            dailyStats.isProfitLimitReached 
+             ? 'bg-emerald-600 text-white' 
+             : 'bg-red-600 text-white'
+        }`}>
+            {dailyStats.isProfitLimitReached ? <Target size={48} /> : <Lock size={48} />}
             <div>
-                <h2 className="text-2xl font-bold uppercase">Лимиты нарушены!</h2>
-                <p className="text-red-100">Пожалуйста, закройте терминал и отдохните до завтра. Рынок никуда не денется.</p>
+                <h2 className="text-2xl font-bold uppercase">
+                    {dailyStats.isProfitLimitReached ? 'ПЛАН ВЫПОЛНЕН!' : 'ЛИМИТЫ НАРУШЕНЫ!'}
+                </h2>
+                <p className={`${dailyStats.isProfitLimitReached ? 'text-emerald-100' : 'text-red-100'}`}>
+                    {dailyStats.isProfitLimitReached 
+                        ? 'Отличная работа. Заберите прибыль и отдохните.' 
+                        : 'Пожалуйста, закройте терминал и отдохните до завтра.'}
+                </p>
             </div>
         </div>
       )}
