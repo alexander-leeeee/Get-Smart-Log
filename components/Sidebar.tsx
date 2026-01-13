@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, BookOpen, Calculator, BrainCircuit, LogOut, Settings, Moon, Sun, Home, Languages, Link2 } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Calculator, BrainCircuit, LogOut, Settings, Moon, Sun, Home, Languages, Link2, Coins, TrendingUp } from 'lucide-react';
 import { ViewState, Language, MarketType } from '../types';
 import { translations } from '../utils/translations';
 
