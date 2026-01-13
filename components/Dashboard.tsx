@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Trade } from '../types';
+import { Trade, MarketType } from '../types';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area 
 } from 'recharts';
@@ -10,9 +10,10 @@ import {
 
 interface DashboardProps {
   trades: Trade[];
+  marketType: MarketType;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ trades }) => {
+const Dashboard: React.FC<DashboardProps> = ({ trades, marketType }) => {
   // --- State for Balance (API Source) ---
   const [initialBalance, setInitialBalance] = useState<number>(0);
   const [isLoadingBalance, setIsLoadingBalance] = useState<boolean>(true);
@@ -33,12 +34,13 @@ const Dashboard: React.FC<DashboardProps> = ({ trades }) => {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Эмуляция данных (или берем старые из памяти, если API еще нет)
-      const saved = localStorage.getItem('tm_initial_balance');
-      const apiValue = saved ? parseFloat(saved) : 1000; // Mock value
+      const storageKey = `tm_initial_balance_${marketType}`; // Separate balance for spot/futures
+      const saved = localStorage.getItem(storageKey);
+      const apiValue = saved ? parseFloat(saved) : (marketType === 'SPOT' ? 5000 : 1000); // Mock value differs by market
 
       // Обновляем стейт и сохраняем в LS для Риск-менеджера
       setInitialBalance(apiValue);
-      localStorage.setItem('tm_initial_balance', apiValue.toString());
+      localStorage.setItem(storageKey, apiValue.toString());
 
     } catch (error) {
       console.error("Ошибка синхронизации баланса", error);
@@ -47,10 +49,10 @@ const Dashboard: React.FC<DashboardProps> = ({ trades }) => {
     }
   };
 
-  // Загружаем данные при монтировании компонента
+  // Загружаем данные при монтировании компонента или смене типа рынка
   useEffect(() => {
     fetchBalanceFromApi();
-  }, []);
+  }, [marketType]);
 
   // --- Calculations ---
   const totalTrades = trades.length;
@@ -110,7 +112,9 @@ const Dashboard: React.FC<DashboardProps> = ({ trades }) => {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-           <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Обзор счета</h2>
+           <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+             Обзор счета <span className="text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/30 px-2 py-0.5 rounded text-lg">{marketType}</span>
+           </h2>
            <p className="text-slate-500 dark:text-slate-400 text-sm">Глубокая аналитика вашей торговой эффективности</p>
         </div>
         
@@ -129,7 +133,7 @@ const Dashboard: React.FC<DashboardProps> = ({ trades }) => {
            
            <div>
              <div className="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold flex items-center gap-2">
-                Текущий баланс (API)
+                Баланс ({marketType})
                 <button 
                   onClick={fetchBalanceFromApi} 
                   disabled={isLoadingBalance}
