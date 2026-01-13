@@ -1,11 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Trade } from '../types';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area 
 } from 'recharts';
 import { 
-  Wallet, TrendingUp, TrendingDown, Activity, Percent, Scale, Edit2, Save, X 
+  Wallet, TrendingUp, TrendingDown, Activity, Percent, Scale, RefreshCw, Link2, Loader2 
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -13,19 +13,44 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ trades }) => {
-  // --- State for Initial Balance ---
-  const [initialBalance, setInitialBalance] = useState<number>(() => {
-    const saved = localStorage.getItem('tm_initial_balance');
-    return saved ? parseFloat(saved) : 1000;
-  });
-  const [isEditingBalance, setIsEditingBalance] = useState(false);
-  const [tempBalance, setTempBalance] = useState(initialBalance);
+  // --- State for Balance (API Source) ---
+  const [initialBalance, setInitialBalance] = useState<number>(0);
+  const [isLoadingBalance, setIsLoadingBalance] = useState<boolean>(true);
 
-  const saveBalance = () => {
-    setInitialBalance(tempBalance);
-    localStorage.setItem('tm_initial_balance', tempBalance.toString());
-    setIsEditingBalance(false);
+  // --- API Sync Shell ---
+  const fetchBalanceFromApi = async () => {
+    setIsLoadingBalance(true);
+    try {
+      // ------------------------------------------------------------------
+      // TODO: ЗДЕСЬ ВАШ КОД ДЛЯ ПОЛУЧЕНИЯ БАЛАНСА ПО API
+      // Например:
+      // const response = await fetch('https://api.exchange.com/v1/balance', { ... });
+      // const data = await response.json();
+      // const apiValue = data.total_equity;
+      // ------------------------------------------------------------------
+
+      // Эмуляция задержки API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Эмуляция данных (или берем старые из памяти, если API еще нет)
+      const saved = localStorage.getItem('tm_initial_balance');
+      const apiValue = saved ? parseFloat(saved) : 1000; // Mock value
+
+      // Обновляем стейт и сохраняем в LS для Риск-менеджера
+      setInitialBalance(apiValue);
+      localStorage.setItem('tm_initial_balance', apiValue.toString());
+
+    } catch (error) {
+      console.error("Ошибка синхронизации баланса", error);
+    } finally {
+      setIsLoadingBalance(false);
+    }
   };
+
+  // Загружаем данные при монтировании компонента
+  useEffect(() => {
+    fetchBalanceFromApi();
+  }, []);
 
   // --- Calculations ---
   const totalTrades = trades.length;
@@ -34,6 +59,8 @@ const Dashboard: React.FC<DashboardProps> = ({ trades }) => {
   const sortedTrades = [...trades].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   // Financials
+  // Логика: Если API возвращает стартовый депозит, то текущий = старт + PnL.
+  // Если API будет возвращать уже текущий Equity, то здесь нужно убрать "+ totalPnL"
   const totalPnL = trades.reduce((acc, t) => acc + t.pnl, 0);
   const currentBalance = initialBalance + totalPnL;
 
@@ -54,7 +81,6 @@ const Dashboard: React.FC<DashboardProps> = ({ trades }) => {
   const avgLoss = lossCount > 0 ? grossLoss / lossCount : 0;
   
   // Mathematical Expectation (per trade)
-  // Formula: (Win % * Avg Win) - (Loss % * Avg Loss)
   const expectancy = (winRate / 100 * avgWin) - ((1 - winRate / 100) * avgLoss);
 
   // Max Drawdown Calculation
@@ -88,38 +114,44 @@ const Dashboard: React.FC<DashboardProps> = ({ trades }) => {
            <p className="text-slate-500 dark:text-slate-400 text-sm">Глубокая аналитика вашей торговой эффективности</p>
         </div>
         
-        {/* Balance Card */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-6 py-3 flex items-center gap-4 shadow-sm">
+        {/* Balance Card (API SYNCED) */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-6 py-3 flex items-center gap-4 shadow-sm relative overflow-hidden">
+           {/* Visual Indicator for API Link */}
+           <div className="absolute top-2 right-2 flex gap-1">
+              <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 p-1 rounded-full" title="Синхронизировано по API">
+                <Link2 size={12} />
+              </div>
+           </div>
+
            <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg text-blue-600 dark:text-blue-400">
              <Wallet size={24} />
            </div>
+           
            <div>
              <div className="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold flex items-center gap-2">
-                Текущий баланс
-                {!isEditingBalance && (
-                  <button onClick={() => { setTempBalance(initialBalance); setIsEditingBalance(true); }} className="text-slate-400 hover:text-blue-500">
-                    <Edit2 size={12} />
-                  </button>
-                )}
+                Текущий баланс (API)
+                <button 
+                  onClick={fetchBalanceFromApi} 
+                  disabled={isLoadingBalance}
+                  className={`text-slate-400 hover:text-blue-500 transition-all ${isLoadingBalance ? 'animate-spin' : ''}`}
+                  title="Обновить данные"
+                >
+                  <RefreshCw size={12} />
+                </button>
              </div>
              
-             {isEditingBalance ? (
-               <div className="flex items-center gap-2 mt-1">
-                 <input 
-                    type="number" 
-                    value={tempBalance}
-                    onChange={(e) => setTempBalance(parseFloat(e.target.value))}
-                    className="w-24 bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded px-2 py-1 text-sm outline-none"
-                    autoFocus
-                 />
-                 <button onClick={saveBalance} className="text-green-600 hover:bg-green-100 rounded p-1"><Save size={14} /></button>
-                 <button onClick={() => setIsEditingBalance(false)} className="text-red-500 hover:bg-red-100 rounded p-1"><X size={14} /></button>
-               </div>
-             ) : (
-               <div className="text-2xl font-bold text-slate-900 dark:text-white">
-                 ${currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-               </div>
-             )}
+             <div className="flex items-center gap-2 mt-0.5">
+               {isLoadingBalance ? (
+                 <div className="flex items-center gap-2 text-slate-400">
+                    <Loader2 size={20} className="animate-spin" />
+                    <span className="text-sm font-medium">Загрузка...</span>
+                 </div>
+               ) : (
+                 <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                   ${currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                 </div>
+               )}
+             </div>
            </div>
         </div>
       </div>
