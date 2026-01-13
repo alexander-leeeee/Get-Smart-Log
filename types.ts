@@ -1,3 +1,4 @@
+export type MarketType = 'SPOT' | 'FUTURES';
 
 export enum TradeDirection {
   LONG = 'LONG',
@@ -15,6 +16,7 @@ export interface Trade {
   notes: string;
   pnl: number;
   fees?: number;
+  marketType?: MarketType;
 }
 
 export interface User {
