@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Trade, ViewState, TradeDirection, Language } from './types';
+import { User, Trade, ViewState, TradeDirection, Language, MarketType } from './types';
 import Auth from './components/Auth';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
@@ -23,6 +23,7 @@ const App: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [currentView, setCurrentView] = useState<ViewState>('HOME');
   const [publicView, setPublicView] = useState<PublicViewState>('LANDING');
+  const [marketType, setMarketType] = useState<MarketType>('FUTURES');
 
   // Default to dark theme, but check local storage
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
@@ -89,6 +90,15 @@ const App: React.FC = () => {
     setPublicView('LANDING'); // Reset to Landing Page
   };
 
+  // --- Data Filtering Logic ---
+  // We filter trades based on the selected market type to pass down to components
+  // If a trade has no marketType defined (legacy data), we assume it matches the default 'FUTURES' or include it.
+  // Here we explicitly check for match or undefined (defaulting to FUTURES for legacy)
+  const filteredTrades = trades.filter(t => {
+    const tradeType = t.marketType || 'FUTURES'; 
+    return tradeType === marketType;
+  });
+
   // If user is not logged in, show Landing Page, Auth, Contacts, Pricing or Blog
   if (!user) {
     if (publicView === 'AUTH') {
@@ -143,12 +153,28 @@ const App: React.FC = () => {
         toggleTheme={toggleTheme}
         language={language}
         setLanguage={handleSetLanguage}
+        marketType={marketType}
+        setMarketType={setMarketType}
       />
       
       {/* Mobile Header (visible only on small screens) */}
       <div className="md:hidden fixed top-0 left-0 right-0 bg-white dark:bg-slate-900 p-4 border-b border-slate-200 dark:border-slate-800 z-50 flex justify-between items-center transition-colors">
-        <span className="font-bold">Get Smart Log</span>
+        <span className="font-bold">Profitera</span>
         <div className="flex items-center gap-3">
+          <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+            <button 
+              onClick={() => setMarketType('SPOT')} 
+              className={`px-2 py-1 text-xs font-bold rounded ${marketType === 'SPOT' ? 'bg-white dark:bg-slate-700 shadow' : 'text-slate-500'}`}
+            >
+              S
+            </button>
+            <button 
+              onClick={() => setMarketType('FUTURES')} 
+              className={`px-2 py-1 text-xs font-bold rounded ${marketType === 'FUTURES' ? 'bg-white dark:bg-slate-700 shadow' : 'text-slate-500'}`}
+            >
+              F
+            </button>
+          </div>
              <select 
                value={language}
                onChange={(e) => handleSetLanguage(e.target.value as Language)}
@@ -167,10 +193,10 @@ const App: React.FC = () => {
       {/* Main Content Area */}
       <main className="flex-1 md:ml-64 p-4 md:p-8 pt-20 md:pt-8 transition-all">
         {currentView === 'HOME' && <HomePage user={user} onNavigate={setCurrentView} />}
-        {currentView === 'DASHBOARD' && <Dashboard trades={trades} />}
-        {currentView === 'JOURNAL' && <Journal trades={trades} setTrades={setTrades} user={user} />}
-        {currentView === 'RISK_CALC' && <RiskManager trades={trades} />}
-        {currentView === 'AI_ANALYSIS' && <AIAnalyzer />}
+        {currentView === 'DASHBOARD' && <Dashboard trades={filteredTrades} marketType={marketType} />}
+        {currentView === 'JOURNAL' && <Journal trades={filteredTrades} setTrades={setTrades} marketType={marketType} />}
+        {currentView === 'RISK_CALC' && <RiskManager trades={filteredTrades} marketType={marketType} />}
+        {currentView === 'AI_ANALYSIS' && <AIAnalyzer marketType={marketType} />}
         {currentView === 'EXCHANGE_CONNECT' && <ExchangeConnect language={language} user={user} />}
         {currentView === 'SETTINGS' && <Settings user={user} />}
       </main>
