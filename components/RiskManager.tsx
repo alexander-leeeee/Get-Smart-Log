@@ -120,28 +120,6 @@ const RiskManager: React.FC<RiskManagerProps> = ({ trades, marketType }) => {
 
   const tradingLocked = dailyStats.isLossLimitBreached || dailyStats.isTradesLimitBreached || dailyStats.isProfitLimitReached;
 
-    setDailyStats({
-      pnl,
-      tradesCount: count,
-      lossLimitValueMoney: lossLimitMoney,
-      profitLimitValueMoney: profitLimitMoney,
-      // Убыток: PnL меньше или равен отрицательному лимиту
-      isLossLimitBreached: pnl <= -Math.abs(lossLimitMoney) && lossLimitMoney > 0,
-      // Прибыль: PnL больше или равен лимиту (если лимит задан > 0)
-      isProfitLimitReached: settings.maxDailyProfit > 0 && pnl >= profitLimitMoney,
-      isTradesLimitBreached: settings.maxDailyTrades > 0 && count >= settings.maxDailyTrades
-    });
-
-  }, [trades, settings, deposit]);
-
-  const handleSave = () => {
-    setSettings(tempSettings);
-    localStorage.setItem('tm_risk_settings_v2', JSON.stringify(tempSettings));
-    setIsEditing(false);
-  };
-
-  const tradingLocked = dailyStats.isLossLimitBreached || dailyStats.isTradesLimitBreached || dailyStats.isProfitLimitReached;
-
   // Компонент переключателя типа (USD / %)
   const TypeToggle = ({ type, onChange }: { type: LimitType, onChange: (t: LimitType) => void }) => (
     <div className="flex bg-slate-100 dark:bg-slate-800 rounded-lg p-1 ml-2">
@@ -170,7 +148,7 @@ const RiskManager: React.FC<RiskManagerProps> = ({ trades, marketType }) => {
         <div>
           <h2 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Shield className="text-blue-600 dark:text-blue-400" />
-            Риск-Менеджер
+            Риск-Менеджер ({marketType})
           </h2>
           <p className="text-slate-500 dark:text-slate-400 text-sm">
             Депозит: <span className="font-mono font-bold text-slate-700 dark:text-slate-300">${deposit}</span> (из настроек дашборда)
@@ -201,7 +179,7 @@ const RiskManager: React.FC<RiskManagerProps> = ({ trades, marketType }) => {
           <div className={`p-6 rounded-2xl border shadow-sm transition-colors ${dailyStats.isLossLimitBreached ? 'bg-red-50 border-red-200 dark:bg-red-900/10 dark:border-red-800' : 'bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-800'}`}>
             <div className="flex justify-between items-start mb-4">
               <div>
-                <h3 className="text-slate-500 dark:text-slate-400 font-medium text-sm uppercase tracking-wide">Текущий результат</h3>
+                <h3 className="text-slate-500 dark:text-slate-400 font-medium text-sm uppercase tracking-wide">Текущий результат ({marketType})</h3>
                 <div className={`text-4xl font-bold mt-1 ${dailyStats.pnl >= 0 ? 'text-emerald-500' : 'text-red-500'}`}>
                   {dailyStats.pnl >= 0 ? '+' : ''}{dailyStats.pnl.toFixed(2)} $
                 </div>
