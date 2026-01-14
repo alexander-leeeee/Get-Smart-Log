@@ -1,12 +1,13 @@
 
 import React, { useState } from 'react';
-import { Trade, TradeDirection } from '../types';
-import { Trash2, Wand2, BrainCircuit, FileText, Save, X, UploadCloud } from 'lucide-react';
+import { Trade, TradeDirection, MarketType } from '../types';
+import { Trash2, Wand2, BrainCircuit, FileText, Save, X, UploadCloud, Coins, TrendingUp } from 'lucide-react';
 import { analyzeTradeWithAI } from '../services/geminiService';
 
 interface JournalProps {
   trades: Trade[];
   setTrades: React.Dispatch<React.SetStateAction<Trade[]>>;
+  marketType: MarketType;
   user: any;
 }
 
