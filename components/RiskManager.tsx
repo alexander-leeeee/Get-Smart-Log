@@ -1,10 +1,11 @@
 
 import React, { useState, useEffect } from 'react';
-import { Trade } from '../types';
+import { Trade, MarketType } from '../types';
 import { Shield, Lock, Unlock, Save, AlertOctagon, Target, DollarSign, Percent, TrendingUp, AlertTriangle, ShieldCheck } from 'lucide-react';
 
 interface RiskManagerProps {
   trades: Trade[];
+  marketType: MarketType;
 }
 
 type LimitType = 'USD' | 'PERCENT';
@@ -22,30 +23,53 @@ interface RiskSettings {
   maxDailyTrades: number;
 }
 
-const RiskManager: React.FC<RiskManagerProps> = ({ trades }) => {
-  // 1. Получаем депозит для расчетов процентов
-  const [deposit, setDeposit] = useState<number>(() => {
-    const savedBalance = localStorage.getItem('tm_initial_balance');
-    return savedBalance ? parseFloat(savedBalance) : 1000;
-  });
+const RiskManager: React.FC<RiskManagerProps> = ({ trades, marketType }) => {
+  // 1. Получаем депозит для расчетов процентов (с учетом типа рынка)
+  const [deposit, setDeposit] = useState<number>(0);
 
-  // 2. Настройки риск-менеджмента
-  const [settings, setSettings] = useState<RiskSettings>(() => {
-    const saved = localStorage.getItem('tm_risk_settings_v2');
-    if (saved) return JSON.parse(saved);
-    
-    // Миграция со старой версии или дефолт
-    return {
-      maxDailyLoss: 5, // 5% по дефолту безопаснее
+  useEffect(() => {
+    // Получаем баланс из LS, который сохранил Dashboard
+    const storageKey = `tm_initial_balance_${marketType}`;
+    const savedBalance = localStorage.getItem(storageKey);
+    setDeposit(savedBalance ? parseFloat(savedBalance) : (marketType === 'SPOT' ? 5000 : 1000));
+  }, [marketType]);
+
+  // 2. Настройки риск-менеджмента (отдельные для Spot и Futures)
+  const settingsKey = `tm_risk_settings_v2_${marketType}`;
+
+  const [settings, setSettings] = useState<RiskSettings>({
+      maxDailyLoss: 5,
       dailyLossType: 'PERCENT',
       maxDailyProfit: 0,
       dailyProfitType: 'PERCENT',
       maxDailyTrades: 5,
-    };
   });
+
+  // Загрузка настроек при смене рынка
+  useEffect(() => {
+    const saved = localStorage.getItem(settingsKey);
+    if (saved) {
+      setSettings(JSON.parse(saved));
+    } else {
+      // Дефолт
+      setSettings({
+        maxDailyLoss: 5,
+        dailyLossType: 'PERCENT',
+        maxDailyProfit: 0,
+        dailyProfitType: 'PERCENT',
+        maxDailyTrades: 5,
+      });
+    }
+  }, [marketType, settingsKey]);
 
   const [isEditing, setIsEditing] = useState(false);
   const [tempSettings, setTempSettings] = useState<RiskSettings>(settings);
+
+  // Синхронизация tempSettings при смене settings (смене рынка)
+  useEffect(() => {
+    setTempSettings(settings);
+    setIsEditing(false);
+  }, [settings]);
 
   // 3. Статистика за сегодня
   const [dailyStats, setDailyStats] = useState({
@@ -73,6 +97,28 @@ const RiskManager: React.FC<RiskManagerProps> = ({ trades }) => {
     const profitLimitMoney = settings.dailyProfitType === 'PERCENT'
       ? (deposit * (settings.maxDailyProfit / 100))
       : settings.maxDailyProfit;
+
+    setDailyStats({
+      pnl,
+      tradesCount: count,
+      lossLimitValueMoney: lossLimitMoney,
+      profitLimitValueMoney: profitLimitMoney,
+      // Убыток: PnL меньше или равен отрицательному лимиту
+      isLossLimitBreached: pnl <= -Math.abs(lossLimitMoney) && lossLimitMoney > 0,
+      // Прибыль: PnL больше или равен лимиту (если лимит задан > 0)
+      isProfitLimitReached: settings.maxDailyProfit > 0 && pnl >= profitLimitMoney,
+      isTradesLimitBreached: settings.maxDailyTrades > 0 && count >= settings.maxDailyTrades
+    });
+
+  }, [trades, settings, deposit]);
+
+  const handleSave = () => {
+    setSettings(tempSettings);
+    localStorage.setItem(settingsKey, JSON.stringify(tempSettings));
+    setIsEditing(false);
+  };
+
+  const tradingLocked = dailyStats.isLossLimitBreached || dailyStats.isTradesLimitBreached || dailyStats.isProfitLimitReached;
 
     setDailyStats({
       pnl,
