@@ -91,27 +91,17 @@ const Dashboard: React.FC<DashboardProps> = ({ trades, marketType, totalBalance 
            <div>
              <div className="text-xs text-slate-500 dark:text-slate-400 uppercase font-semibold flex items-center gap-2">
                 Баланс ({marketType})
-                <button 
-                  onClick={fetchBalanceFromApi} 
-                  disabled={isLoadingBalance}
-                  className={`text-slate-400 hover:text-blue-500 transition-all ${isLoadingBalance ? 'animate-spin' : ''}`}
-                  title="Обновить данные"
-                >
+                {/* Оставляем просто иконку без обработчиков, которые вызывают ошибку */}
+                <div className="text-slate-400">
                   <RefreshCw size={12} />
-                </button>
+                </div>
              </div>
              
              <div className="flex items-center gap-2 mt-0.5">
-               {isLoadingBalance ? (
-                 <div className="flex items-center gap-2 text-slate-400">
-                    <Loader2 size={20} className="animate-spin" />
-                    <span className="text-sm font-medium">Загрузка...</span>
-                 </div>
-               ) : (
-                 <div className="text-2xl font-bold text-slate-900 dark:text-white">
-                   ${currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                 </div>
-               )}
+                {/* Выводим сразу текущий баланс без проверки на загрузку */}
+                <div className="text-2xl font-bold text-slate-900 dark:text-white">
+                  ${currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                </div>
              </div>
            </div>
         </div>
