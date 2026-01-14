@@ -25,6 +25,23 @@ const App: React.FC = () => {
   const [publicView, setPublicView] = useState<PublicViewState>('LANDING');
   const [marketType, setMarketType] = useState<MarketType>('FUTURES');
 
+  const loadTradesFromDb = async () => {
+    if (!user?.id) return;
+    try {
+      const response = await fetch(`/api/get-trades?userId=${user.id}&marketType=${marketType}`);
+      const data = await response.json();
+      if (data.trades) {
+        setTrades(data.trades); 
+      }
+    } catch (err) {
+      console.error("Ошибка загрузки сделок:", err);
+    }
+  };
+
+  useEffect(() => {
+    loadTradesFromDb();
+  }, [marketType, user]);
+
   // Default to dark theme, but check local storage
   const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
     const savedTheme = localStorage.getItem('tm_theme');
