@@ -12,6 +12,21 @@ interface JournalProps {
   onSyncSuccess?: () => void; // Добавляем этот пропс (опционально)
 }
 
+const formatOrderType = (type?: string) => {
+  if (!type) return 'N/A';
+  const types: Record<string, string> = {
+    'LIMIT': 'Лимит',
+    'MARKET': 'Маркет',
+    'STOP': 'Стоп-Лимит',
+    'STOP_MARKET': 'Стоп-Маркет',
+    'TRAILING_STOP_MARKET': 'Трейлинг',
+    'POST_ONLY': 'Post-Only',
+    'TWAP': 'TWAP',
+    'LIQUIDATION': 'Ликвидация'
+  };
+  return types[type] || type;
+};
+
 const Journal: React.FC<JournalProps> = ({ trades, setTrades, marketType, user, onSyncSuccess }) => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [analyzingId, setAnalyzingId] = useState<string | null>(null);
@@ -118,6 +133,7 @@ const handleSyncHistory = async () => {
               <tr>
                 <th className="p-4">Дата</th>
                 <th className="p-4">Тикер</th>
+                <th className="p-4">Тип</th>
                 <th className="p-4">Напр.</th>
                 <th className="p-4">Вход</th>
                 <th className="p-4">Выход</th>
@@ -130,7 +146,7 @@ const handleSyncHistory = async () => {
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {trades.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="p-8 text-center text-slate-500">
+                  <td colSpan={10} className="p-8 text-center text-slate-500">
                     Сделок в журнале {marketType} пока нет. Подключите биржу в разделе "API Ключи" для автоматической синхронизации.
                   </td>
                 </tr>
@@ -153,6 +169,19 @@ const handleSyncHistory = async () => {
                       <td className="p-4">
                         <span className={`px-2 py-1 rounded text-xs font-bold ${trade.direction === TradeDirection.LONG ? 'bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-400'}`}>
                           {trade.direction}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold border whitespace-nowrap uppercase ${
+                          trade.orderType === 'LIMIT' 
+                            ? 'bg-blue-50 text-blue-600 border-blue-100 dark:bg-blue-900/20 dark:text-blue-400' 
+                            : trade.orderType === 'MARKET'
+                            ? 'bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-400'
+                            : (trade.orderType?.includes('STOP') || trade.orderType?.includes('TAKE'))
+                            ? 'bg-purple-50 text-purple-600 border-purple-100 dark:bg-purple-900/20 dark:text-purple-400'
+                            : 'bg-orange-50 text-orange-600 border-orange-100 dark:bg-orange-900/20 dark:text-orange-400'
+                        }`}>
+                          {formatOrderType(trade.orderType)}
                         </span>
                       </td>
                       <td className="p-4 text-slate-700 dark:text-slate-300">{trade.entryPrice}</td>
@@ -199,7 +228,7 @@ const handleSyncHistory = async () => {
                     {/* Note Editor Row */}
                     {editingNoteId === trade.id && (
                       <tr className="bg-blue-50 dark:bg-blue-900/10 animate-in fade-in slide-in-from-top-2">
-                        <td colSpan={9} className="p-4">
+                        <td colSpan={10} className="p-4">
                           <div className="bg-white dark:bg-slate-950 p-4 rounded-lg border border-blue-200 dark:border-blue-500/30">
                             <h4 className="font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
                               <FileText size={16} className="text-blue-500" /> 
@@ -233,7 +262,7 @@ const handleSyncHistory = async () => {
                     {/* AI Analysis Row */}
                     {analysisResult?.id === trade.id && (
                        <tr className="bg-purple-50 dark:bg-purple-900/10 animate-in fade-in slide-in-from-top-2">
-                        <td colSpan={9} className="p-4">
+                        <td colSpan={10} className="p-4">
                           <div className="bg-white dark:bg-slate-950 p-4 rounded-lg border border-purple-200 dark:border-purple-500/30">
                             <h4 className="flex items-center gap-2 text-purple-700 dark:text-purple-300 font-bold mb-2">
                               <BrainCircuit size={16} /> Анализ ИИ:
