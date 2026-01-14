@@ -97,7 +97,7 @@ const handleSyncHistory = async () => {
             className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all disabled:opacity-50"
         >
             <UploadCloud size={20} className={isSyncing ? 'animate-bounce' : ''} />
-            <span className="font-medium text-sm">
+            <span className="font-medium text-sm hidden sm:inline">
                 {isSyncing ? 'Загрузка...' : 'Загрузить историю сделок'}
             </span>
         </button>
