@@ -1,8 +1,14 @@
+
 import React, { useState } from 'react';
 import { askGeneralTradingQuestion } from '../services/geminiService';
 import { Send, Bot } from 'lucide-react';
+import { MarketType } from '../types';
 
-const AIAnalyzer: React.FC = () => {
+interface AIAnalyzerProps {
+  marketType: MarketType;
+}
+
+const AIAnalyzer: React.FC<AIAnalyzerProps> = ({ marketType }) => {
   const [query, setQuery] = useState('');
   const [chatHistory, setChatHistory] = useState<{role: 'user' | 'ai', text: string}[]>([]);
   const [loading, setLoading] = useState(false);
@@ -16,7 +22,9 @@ const AIAnalyzer: React.FC = () => {
     setChatHistory(prev => [...prev, { role: 'user', text: userMsg }]);
     setLoading(true);
 
-    const aiResponse = await askGeneralTradingQuestion(userMsg);
+    // Add context to the question
+    const contextQuery = `[Контекст: Рынок ${marketType}] ${userMsg}`;
+    const aiResponse = await askGeneralTradingQuestion(contextQuery);
     
     setChatHistory(prev => [...prev, { role: 'ai', text: aiResponse }]);
     setLoading(false);
@@ -29,7 +37,10 @@ const AIAnalyzer: React.FC = () => {
            <Bot className="text-purple-600 dark:text-purple-400" size={24} />
         </div>
         <div>
-          <h2 className="font-bold text-slate-900 dark:text-white">Торговый ассистент на базе ИИ</h2>
+          <h2 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            AI Ассистент
+            <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded">{marketType}</span>
+          </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">Powered by Gemini 3 Flash</p>
         </div>
       </div>
@@ -38,7 +49,7 @@ const AIAnalyzer: React.FC = () => {
         {chatHistory.length === 0 && (
           <div className="text-center text-slate-400 dark:text-slate-500 mt-10">
             <Bot size={48} className="mx-auto mb-4 opacity-20" />
-            <p>Задайте вопрос о стратегии, психологии или анализе рынка.</p>
+            <p>Задайте вопрос о стратегии, психологии или анализе рынка {marketType}.</p>
           </div>
         )}
         {chatHistory.map((msg, idx) => (
@@ -71,7 +82,7 @@ const AIAnalyzer: React.FC = () => {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Спросите о трейдинге..."
+            placeholder={`Спросите о ${marketType} трейдинге...`}
             className="flex-1 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-4 py-2 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
           />
           <button 
