@@ -19,33 +19,24 @@ export default async function handler(req: any, res: any) {
     });
 
     let allTrades = [];
-    // Используем только SOL/USDT:USDT для теста, раз мы точно знаем, что сделка там
-    let symbols = ['SOL/USDT:USDT']; 
+    // Для теста берем с запасом от 1 января
+    const since = new Date('2026-01-01').getTime();
 
-    // Если это не тест, подтягиваем остальные пары через Income
-    if (ccxtMarketType === 'future') {
-       try {
-         const income = await (exchange as any).fapiPrivateGetIncome({ startTime: Date.now() - 7 * 24 * 60 * 60 * 1000 });
-         const foundSymbols = [...new Set(income.map((i: any) => i.symbol))]
-           .filter(s => s)
-           .map((s: any) => `${s.replace(/USDT$/, '/USDT')}:USDT`);
-         symbols = [...new Set([...symbols, ...foundSymbols])];
-       } catch (e) { console.log("Ошибка Income, идем по списку"); }
-    }
+    // Прямой запрос по SOL/USDT:USDT (как в дебаге)
+    const symbols = marketType === 'FUTURES' ? ['SOL/USDT:USDT'] : []; 
 
     for (const symbol of symbols) {
       try {
         const symbolTrades = await exchange.fetchMyTrades(symbol, since);
         if (symbolTrades.length > 0) {
           allTrades.push(...symbolTrades.map((t: any) => {
-            // Извлекаем расширенные данные из объекта info от Binance
             const info = t.info || {};
             return {
               ...t,
               market_type: marketType,
-              // Binance передает realizedPnl только для закрывающих сделок
+              // Вытягиваем PnL и комиссии из сырых данных Binance
               realized_pnl: info.realizedPnl ? parseFloat(info.realizedPnl) : 0,
-              order_type: info.type || 'MARKET', // По умолчанию MARKET, если не указано
+              order_type: info.type || 'MARKET',
               commission: info.commission ? parseFloat(info.commission) : (t.fee ? t.fee.cost : 0),
               commission_asset: info.commissionAsset || (t.fee ? t.fee.currency : 'USDT')
             };
@@ -54,7 +45,6 @@ export default async function handler(req: any, res: any) {
       } catch (e) { console.log(`Ошибка по ${symbol}`); }
     }
 
-    // Сохранение в базу
     for (const trade of allTrades) {
       const cleanSymbol = trade.symbol.split(':')[0]; 
       
@@ -72,12 +62,14 @@ export default async function handler(req: any, res: any) {
         )
         ON CONFLICT (external_id) DO UPDATE SET
           pnl = EXCLUDED.pnl,
-          commission = EXCLUDED.commission;
+          commission = EXCLUDED.commission,
+          order_type = EXCLUDED.order_type,
+          commission_asset = EXCLUDED.commission_asset;
       `;
     }
 
     return res.status(200).json({ 
-      message: `Синхронизация завершена. Найдено сделок: ${allTrades.length}` 
+      message: `Данные обновлены! Сделок в базе: ${allTrades.length}` 
     });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
