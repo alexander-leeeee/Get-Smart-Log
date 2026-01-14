@@ -152,7 +152,7 @@ const RiskManager: React.FC<RiskManagerProps> = ({ trades, marketType, totalBala
             Риск-Менеджер ({marketType})
           </h2>
           <p className="text-slate-500 dark:text-slate-400 text-sm">
-            Депозит: <span className="font-mono font-bold text-slate-700 dark:text-slate-300">${deposit}</span> (из настроек дашборда)
+            Баланс: <span className="font-mono font-bold text-slate-700 dark:text-slate-300">${deposit}</span>
           </p>
         </div>
         
