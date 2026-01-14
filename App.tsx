@@ -24,22 +24,29 @@ const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<ViewState>('HOME');
   const [publicView, setPublicView] = useState<PublicViewState>('LANDING');
   const [marketType, setMarketType] = useState<MarketType>('FUTURES');
+  const [balance, setBalance] = useState<number>(0);
 
-  const loadTradesFromDb = async () => {
+const loadData = async () => {
     if (!user?.id) return;
     try {
-      const response = await fetch(`/api/get-trades?userId=${user.id}&marketType=${marketType}`);
-      const data = await response.json();
-      if (data.trades) {
-        setTrades(data.trades); 
+      // Загружаем сделки из базы
+      const tradesRes = await fetch(`/api/get-trades?userId=${user.id}&marketType=${marketType}`);
+      const tradesData = await tradesRes.json();
+      if (tradesData.trades) setTrades(tradesData.trades);
+
+      // Загружаем баланс напрямую с Binance
+      const balanceRes = await fetch(`/api/get-balance?userId=${user.id}&marketType=${marketType}`);
+      const balanceData = await balanceRes.json();
+      if (typeof balanceData.balance === 'number') {
+        setBalance(balanceData.balance);
       }
     } catch (err) {
-      console.error("Ошибка загрузки сделок:", err);
+      console.error("Ошибка загрузки данных:", err);
     }
   };
 
   useEffect(() => {
-    loadTradesFromDb();
+    loadData();
   }, [marketType, user]);
 
   // Default to dark theme, but check local storage
@@ -210,8 +217,8 @@ const App: React.FC = () => {
       {/* Main Content Area */}
       <main className="flex-1 md:ml-64 p-4 md:p-8 pt-20 md:pt-8 transition-all">
         {currentView === 'HOME' && <HomePage user={user} onNavigate={setCurrentView} />}
-        {currentView === 'DASHBOARD' && <Dashboard trades={filteredTrades} marketType={marketType} />}
-        {currentView === 'JOURNAL' && <Journal trades={filteredTrades} setTrades={setTrades} marketType={marketType} user={user} onSyncSuccess={loadTradesFromDb} />}
+        {currentView === 'DASHBOARD' && <Dashboard trades={filteredTrades} marketType={marketType} totalBalance={balance} />}
+        {currentView === 'JOURNAL' && <Journal trades={filteredTrades} setTrades={setTrades} marketType={marketType} user={user} onSyncSuccess={loadData} />}
         {currentView === 'RISK_CALC' && <RiskManager trades={filteredTrades} marketType={marketType} />}
         {currentView === 'AI_ANALYSIS' && <AIAnalyzer marketType={marketType} />}
         {currentView === 'EXCHANGE_CONNECT' && <ExchangeConnect language={language} user={user} />}
