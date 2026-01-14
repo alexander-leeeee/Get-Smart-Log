@@ -15,13 +15,17 @@ interface DashboardProps {
 
 const Dashboard: React.FC<DashboardProps> = ({ trades, marketType, totalBalance }) => {
   // Анимация обновления баланса
-  const [isSyncing, setIsSyncing] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(true);
 
   useEffect(() => {
-    // Каждый раз, когда баланс меняется (пришел из App.tsx), включаем анимацию
-    setIsSyncing(true);
-    const timer = setTimeout(() => setIsSyncing(false), 1000); // Строго 500мс
-    return () => clearTimeout(timer);
+    // Если баланс еще не пришел (равен 0), продолжаем крутить
+    if (totalBalance === 0) {
+      setIsSyncing(true);
+    } else {
+      // Как только баланс появился, крутим еще 500мс для красоты и выключаем
+      const timer = setTimeout(() => setIsSyncing(false), 500);
+      return () => clearTimeout(timer);
+    }
   }, [totalBalance, marketType]);
 
   // 1. Сначала считаем PnL из сделок. Заменяем NULL на 0 для безопасности
