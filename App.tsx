@@ -15,7 +15,7 @@ import Pricing from './components/Pricing';
 import Blog from './components/Blog';
 import PublicOffer from './components/PublicOffer';
 import PrivacyPolicy from './components/PrivacyPolicy';
-import { Home, LayoutDashboard, BookOpen, Calculator, BrainCircuit, Link2 } from 'lucide-react';
+import { Home, LayoutDashboard, BookOpen, Calculator, BrainCircuit, Link2, Coins, TrendingUp } from 'lucide-react';
 
 type PublicViewState = 'LANDING' | 'AUTH' | 'CONTACTS' | 'PRICING' | 'BLOG' | 'PUBLIC_OFFER' | 'PRIVACY_POLICY';
 
