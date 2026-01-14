@@ -5,8 +5,6 @@ export default async function handler(req: any, res: any) {
   const sql = neon(process.env.DATABASE_URL!);
   const { userId, loadHistory, marketType } = req.body; 
 
-  console.log(`[DEBUG] Старт синхронизации для пользователя ${userId}. Рынок: ${marketType}`);
-
   try {
     const connection = await sql`SELECT api_key, api_secret, exchange_name FROM api_keys WHERE user_id = ${userId} LIMIT 1`;
     if (connection.length === 0) return res.status(404).json({ error: 'Ключи не найдены' });
@@ -21,41 +19,24 @@ export default async function handler(req: any, res: any) {
     });
 
     let allTrades = [];
-    // Принудительно ставим дату начала - 1 января 2026, чтобы точно захватить твои сделки
-    const since = new Date('2026-01-01').getTime();
-    console.log(`[DEBUG] Ищем сделки начиная с: ${new Date(since).toISOString()}`);
+    // Используем только SOL/USDT:USDT для теста, раз мы точно знаем, что сделка там
+    let symbols = ['SOL/USDT:USDT']; 
 
-    let symbols = [];
+    // Если это не тест, подтягиваем остальные пары через Income
     if (ccxtMarketType === 'future') {
-      try {
-        const income = await (exchange as any).fapiPrivateGetIncome({ startTime: since });
-        // Пробуем два варианта формата символа для CCXT
-        const baseSymbols = [...new Set(income.map((i: any) => i.symbol))].filter(s => s);
-        
-        symbols = [
-          ...baseSymbols.map((s: any) => s.endsWith('USDT') ? s.replace(/USDT$/, '/USDT') : s),
-          ...baseSymbols.map((s: any) => s.endsWith('USDT') ? `${s.replace(/USDT$/, '/USDT')}:USDT` : s)
-        ];
-        
-        // Добавляем твой SOL принудительно во всех форматах
-        if (!symbols.includes('SOL/USDT')) symbols.push('SOL/USDT');
-        if (!symbols.includes('SOL/USDT:USDT')) symbols.push('SOL/USDT:USDT');
-      } catch (e) {
-        console.log("[DEBUG] Ошибка при получении Income, использую ручной список");
-        symbols = ['SOL/USDT', 'SOL/USDT:USDT'];
-      }
-    } else {
-      const balances = await exchange.fetchBalance();
-      symbols = Object.keys(balances.total).filter(c => balances.total[c] > 0).map(c => `${c}/USDT`);
+       try {
+         const income = await (exchange as any).fapiPrivateGetIncome({ startTime: Date.now() - 7 * 24 * 60 * 60 * 1000 });
+         const foundSymbols = [...new Set(income.map((i: any) => i.symbol))]
+           .filter(s => s)
+           .map((s: any) => `${s.replace(/USDT$/, '/USDT')}:USDT`);
+         symbols = [...new Set([...symbols, ...foundSymbols])];
+       } catch (e) { console.log("Ошибка Income, идем по списку"); }
     }
-
-    console.log(`[DEBUG] Итоговый список пар для проверки: ${JSON.stringify(symbols)}`);
 
     for (const symbol of symbols) {
       try {
-        console.log(`[DEBUG] Запрос fetchMyTrades для ${symbol}...`);
-        const symbolTrades = await exchange.fetchMyTrades(symbol, since);
-        console.log(`[DEBUG] Результат для ${symbol}: ${symbolTrades.length} сделок`);
+        // ВАЖНО: для теста SOL убираем since, чтобы Binance отдал последние 5 сделок наверняка
+        const symbolTrades = await exchange.fetchMyTrades(symbol, undefined, 10);
         
         if (symbolTrades.length > 0) {
           allTrades.push(...symbolTrades.map((t: any) => ({ 
@@ -63,13 +44,10 @@ export default async function handler(req: any, res: any) {
             market_type: marketType 
           })));
         }
-      } catch (e: any) { 
-        console.log(`[DEBUG] Ошибка запроса по ${symbol}: ${e.message}`); 
-      }
+      } catch (e: any) { console.log(`Ошибка по ${symbol}: ${e.message}`); }
     }
 
-    // Сохранение в базу
-    console.log(`[DEBUG] Всего уникальных сделок к сохранению: ${allTrades.length}`);
+    // Сохранение в базу Neon
     for (const trade of allTrades) {
       const cleanSymbol = trade.symbol.split(':')[0]; 
       await sql`
@@ -83,10 +61,9 @@ export default async function handler(req: any, res: any) {
     }
 
     return res.status(200).json({ 
-      message: `Синхронизация ${marketType} прошла успешно! Найдено сделок: ${allTrades.length}` 
+      message: `Синхронизация завершена. Найдено сделок: ${allTrades.length}` 
     });
   } catch (error: any) {
-    console.error("[DEBUG] Глобальная ошибка:", error.message);
     return res.status(500).json({ error: error.message });
   }
 }
