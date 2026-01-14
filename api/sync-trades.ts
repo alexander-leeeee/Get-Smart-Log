@@ -19,58 +19,44 @@ export default async function handler(req: any, res: any) {
     });
 
     let allTrades = [];
-    let symbols = [];
-    // 90 дней для глубокого поиска истории
     const since = loadHistory ? Date.now() - 90 * 24 * 60 * 60 * 1000 : Date.now() - 24 * 60 * 60 * 1000;
 
+    // Автоматический поиск символов через Income (историю транзакций)
+    let symbols = [];
     if (ccxtMarketType === 'future') {
-      try {
-        const income = await (exchange as any).fapiPrivateGetIncome({ startTime: since });
-        const activeSymbols = [...new Set(income.map((i: any) => i.symbol))]
-          .filter(s => s !== null && s !== "")
-          .map((s: any) => s.endsWith('USDT') ? s.replace(/USDT$/, '/USDT') : s);
-
-        symbols = activeSymbols;
-        const positions = await exchange.fetchPositions();
-        const positionSymbols = positions.filter((p: any) => parseFloat(p.contracts) !== 0).map((p: any) => p.symbol);
-        symbols = [...new Set([...symbols, ...positionSymbols])];
-        
-        if (symbols.length === 0) symbols = ['BTC/USDT', 'SOL/USDT'];
-      } catch (e) {
-        console.error("Ошибка автопоиска:", e);
-        symbols = ['SOL/USDT', 'BTC/USDT'];
-      }
+      const income = await (exchange as any).fapiPrivateGetIncome({ startTime: since });
+      symbols = [...new Set(income.map((i: any) => i.symbol))]
+        .filter(s => s)
+        .map((s: any) => s.endsWith('USDT') ? s.replace(/USDT$/, '/USDT') : s);
+      
+      // Добавляем SOL/USDT принудительно для подстраховки
+      if (!symbols.includes('SOL/USDT')) symbols.push('SOL/USDT');
     } else {
       const balances = await exchange.fetchBalance();
-      symbols = Object.keys(balances.total)
-        .filter(coin => balances.total[coin] > 0 || (balances.used && balances.used[coin] > 0))
-        .map(coin => `${coin}/USDT`);
+      symbols = Object.keys(balances.total).filter(c => balances.total[c] > 0).map(c => `${c}/USDT`);
     }
-
-    // ТЕПЕРЬ ЛОГИРУЕМ ПРАВИЛЬНО (после объявления всех переменных)
-    console.log(`[SYNC] Рынок: ${marketType}, Символов: ${symbols.length}, Ищем с: ${new Date(since).toISOString()}`);
 
     for (const symbol of symbols) {
       try {
         const symbolTrades = await exchange.fetchMyTrades(symbol, since);
-        console.log(`[SYNC] Пара ${symbol}: найдено ${symbolTrades.length} сделок`);
-        
         if (symbolTrades.length > 0) {
           allTrades.push(...symbolTrades.map((t: any) => ({ 
             ...t, 
             market_type: marketType 
           })));
         }
-      } catch (e: any) { 
-        console.log(`[SYNC] Ошибка по ${symbol}: ${e.message}`); 
-      }
+      } catch (e) { console.log(`Ошибка по ${symbol}`); }
     }
 
+    // Сохранение в базу
     for (const trade of allTrades) {
+      // Очищаем символ от ":USDT" для красоты в таблице
+      const cleanSymbol = trade.symbol.split(':')[0]; 
+      
       await sql`
         INSERT INTO trades (user_id, symbol, side, price, amount, timestamp, external_id, exchange_name, market_type)
         VALUES (
-          ${userId}, ${trade.symbol}, ${trade.side}, ${trade.price}, ${trade.amount}, 
+          ${userId}, ${cleanSymbol}, ${trade.side}, ${trade.price}, ${trade.amount}, 
           ${new Date(trade.timestamp).toISOString()}, ${trade.id}, ${exchange_name}, ${trade.market_type}
         )
         ON CONFLICT (external_id) DO NOTHING
@@ -78,10 +64,9 @@ export default async function handler(req: any, res: any) {
     }
 
     return res.status(200).json({ 
-      message: `Синхронизация ${marketType} завершена. Сделок загружено: ${allTrades.length}` 
+      message: `Синхронизация ${marketType} прошла успешно! Загружено сделок: ${allTrades.length}` 
     });
   } catch (error: any) {
-    console.error("Глобальная ошибка API:", error.message);
     return res.status(500).json({ error: error.message });
   }
 }
