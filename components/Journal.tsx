@@ -11,7 +11,7 @@ interface JournalProps {
   user: any;
 }
 
-const Journal: React.FC<JournalProps> = ({ trades, setTrades, user }) => {
+const Journal: React.FC<JournalProps> = ({ trades, setTrades, marketType, user }) => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [analyzingId, setAnalyzingId] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<{id: string, text: string} | null>(null);
@@ -84,7 +84,13 @@ const handleSyncHistory = async () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Торговый Дневник</h2>
+        <div className="flex items-center gap-3">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Торговый Дневник</h2>
+          <span className={`px-2 py-0.5 rounded text-xs font-bold flex items-center gap-1 ${marketType === 'SPOT' ? 'bg-orange-100 text-orange-700' : 'bg-blue-100 text-blue-700'}`}>
+            {marketType === 'SPOT' ? <Coins size={12}/> : <TrendingUp size={12}/>}
+            {marketType}
+          </span>
+        </div>
         <button 
             onClick={handleSyncHistory}
             disabled={isSyncing}
@@ -118,7 +124,7 @@ const handleSyncHistory = async () => {
               {trades.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="p-8 text-center text-slate-500">
-                    Сделок пока нет. Подключите биржу в разделе "API Ключи" для автоматической синхронизации.
+                    Сделок в журнале {marketType} пока нет. Подключите биржу в разделе "API Ключи" для автоматической синхронизации.
                   </td>
                 </tr>
               ) : (
