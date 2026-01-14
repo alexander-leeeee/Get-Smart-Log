@@ -11,90 +11,47 @@ import {
 interface DashboardProps {
   trades: Trade[];
   marketType: MarketType;
+  totalBalance: number;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ trades, marketType }) => {
-  // --- State for Balance (API Source) ---
-  const [initialBalance, setInitialBalance] = useState<number>(0);
-  const [isLoadingBalance, setIsLoadingBalance] = useState<boolean>(true);
-
-  // --- API Sync Shell ---
-  const fetchBalanceFromApi = async () => {
-    setIsLoadingBalance(true);
-    try {
-      // ------------------------------------------------------------------
-      // TODO: ЗДЕСЬ ВАШ КОД ДЛЯ ПОЛУЧЕНИЯ БАЛАНСА ПО API
-      // Например:
-      // const response = await fetch('https://api.exchange.com/v1/balance', { ... });
-      // const data = await response.json();
-      // const apiValue = data.total_equity;
-      // ------------------------------------------------------------------
-
-      // Эмуляция задержки API
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Эмуляция данных (или берем старые из памяти, если API еще нет)
-      const storageKey = `tm_initial_balance_${marketType}`; // Separate balance for spot/futures
-      const saved = localStorage.getItem(storageKey);
-      const apiValue = saved ? parseFloat(saved) : (marketType === 'SPOT' ? 5000 : 1000); // Mock value differs by market
-
-      // Обновляем стейт и сохраняем в LS для Риск-менеджера
-      setInitialBalance(apiValue);
-      localStorage.setItem(storageKey, apiValue.toString());
-
-    } catch (error) {
-      console.error("Ошибка синхронизации баланса", error);
-    } finally {
-      setIsLoadingBalance(false);
-    }
-  };
-
-  // Загружаем данные при монтировании компонента или смене типа рынка
-  useEffect(() => {
-    fetchBalanceFromApi();
-  }, [marketType]);
-
-  // --- Calculations ---
-  const totalTrades = trades.length;
+const Dashboard: React.FC<DashboardProps> = ({ trades, marketType, totalBalance }) => {
+  // 1. Сначала считаем PnL из сделок. Заменяем NULL на 0 для безопасности
+  const totalPnL = trades.reduce((acc, t) => acc + (t.pnl || 0), 0);
   
-  // Sort trades by date for correct chart calculation
+  // 2. Расчет балансов
+  const currentBalance = totalBalance; 
+  const initialBalance = totalBalance - totalPnL;
+
+  // 3. Основная статистика
+  const totalTrades = trades.length;
   const sortedTrades = [...trades].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  // Financials
-  // Логика: Если API возвращает стартовый депозит, то текущий = старт + PnL.
-  // Если API будет возвращать уже текущий Equity, то здесь нужно убрать "+ totalPnL"
-  const totalPnL = trades.reduce((acc, t) => acc + t.pnl, 0);
-  const currentBalance = initialBalance + totalPnL;
-
-  // Win/Loss Stats
-  const winningTrades = trades.filter(t => t.pnl > 0);
-  const losingTrades = trades.filter(t => t.pnl <= 0); // Assuming 0 is not a win
+  // Win/Loss логика
+  const winningTrades = trades.filter(t => (t.pnl || 0) > 0);
+  const losingTrades = trades.filter(t => (t.pnl || 0) <= 0);
   
   const winCount = winningTrades.length;
   const lossCount = losingTrades.length;
   const winRate = totalTrades > 0 ? (winCount / totalTrades) * 100 : 0;
 
-  const grossProfit = winningTrades.reduce((acc, t) => acc + t.pnl, 0);
-  const grossLoss = Math.abs(losingTrades.reduce((acc, t) => acc + t.pnl, 0));
+  const grossProfit = winningTrades.reduce((acc, t) => acc + (t.pnl || 0), 0);
+  const grossLoss = Math.abs(losingTrades.reduce((acc, t) => acc + (t.pnl || 0), 0));
 
-  // Advanced Metrics
+  // Метрики
   const profitFactor = grossLoss > 0 ? grossProfit / grossLoss : grossProfit > 0 ? 99.9 : 0;
   const avgWin = winCount > 0 ? grossProfit / winCount : 0;
   const avgLoss = lossCount > 0 ? grossLoss / lossCount : 0;
-  
-  // Mathematical Expectation (per trade)
   const expectancy = (winRate / 100 * avgWin) - ((1 - winRate / 100) * avgLoss);
 
-  // Max Drawdown Calculation
+  // Расчет просадки и данных для графика
   let maxDrawdown = 0;
   let peakBalance = initialBalance;
   let runningBalance = initialBalance;
   
-  // Prepare Chart Data
-  const chartData = [{ date: 'Start', balance: initialBalance }];
+  const chartData = [{ date: 'Start', balance: parseFloat(initialBalance.toFixed(2)) }];
   
   sortedTrades.forEach(t => {
-    runningBalance += t.pnl;
+    runningBalance += (t.pnl || 0);
     if (runningBalance > peakBalance) peakBalance = runningBalance;
     
     const drawdown = peakBalance - runningBalance;
@@ -102,7 +59,7 @@ const Dashboard: React.FC<DashboardProps> = ({ trades, marketType }) => {
 
     chartData.push({
       date: t.date,
-      balance: runningBalance
+      balance: parseFloat(runningBalance.toFixed(2))
     });
   });
 
