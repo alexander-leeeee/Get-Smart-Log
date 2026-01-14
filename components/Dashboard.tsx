@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Trade, MarketType } from '../types';
 import { 
@@ -15,6 +14,16 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ trades, marketType, totalBalance }) => {
+  // Анимация обновления баланса
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  useEffect(() => {
+    // Каждый раз, когда баланс меняется (пришел из App.tsx), включаем анимацию
+    setIsSyncing(true);
+    const timer = setTimeout(() => setIsSyncing(false), 1000); // Строго 500мс
+    return () => clearTimeout(timer);
+  }, [totalBalance, marketType]);
+
   // 1. Сначала считаем PnL из сделок. Заменяем NULL на 0 для безопасности
   const totalPnL = trades.reduce((acc, t) => acc + (t.pnl || 0), 0);
   
@@ -98,11 +107,17 @@ const Dashboard: React.FC<DashboardProps> = ({ trades, marketType, totalBalance 
              </div>
              
              <div className="flex items-center gap-2 mt-0.5">
-                {/* Выводим сразу текущий баланс без проверки на загрузку */}
-                <div className="text-2xl font-bold text-slate-900 dark:text-white">
-                  ${currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
-                </div>
-             </div>
+                {isSyncing ? (
+                  <div className="flex items-center gap-2 text-blue-500/50">
+                    <Loader2 size={20} className="animate-spin" />
+                    <span className="text-sm font-medium animate-pulse">Синхронизация...</span>
+                  </div>
+                ) : (
+                  <div className="text-2xl font-bold text-slate-900 dark:text-white animate-in zoom-in-95 duration-300">
+                    ${currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
+                  </div>
+                )}
+              </div>
            </div>
         </div>
       </div>
