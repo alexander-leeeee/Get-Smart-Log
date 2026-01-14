@@ -194,7 +194,7 @@ const App: React.FC = () => {
       <main className="flex-1 md:ml-64 p-4 md:p-8 pt-20 md:pt-8 transition-all">
         {currentView === 'HOME' && <HomePage user={user} onNavigate={setCurrentView} />}
         {currentView === 'DASHBOARD' && <Dashboard trades={filteredTrades} marketType={marketType} />}
-        {currentView === 'JOURNAL' && <Journal trades={filteredTrades} setTrades={setTrades} marketType={marketType} />}
+        {currentView === 'JOURNAL' && <Journal trades={filteredTrades} setTrades={setTrades} marketType={marketType} user={user} />}
         {currentView === 'RISK_CALC' && <RiskManager trades={filteredTrades} marketType={marketType} />}
         {currentView === 'AI_ANALYSIS' && <AIAnalyzer marketType={marketType} />}
         {currentView === 'EXCHANGE_CONNECT' && <ExchangeConnect language={language} user={user} />}
