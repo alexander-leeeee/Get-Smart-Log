@@ -35,10 +35,6 @@ const Journal: React.FC<JournalProps> = ({ trades, setTrades, marketType, user, 
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
   const [noteContent, setNoteContent] = useState<string>('');
 
-  const handleDelete = (id: string) => {
-    setTrades(prev => prev.filter(t => t.id !== id));
-  };
-
   const handleAIAnalysis = async (trade: Trade) => {
     setAnalyzingId(trade.id);
     setAnalysisResult(null);
@@ -213,13 +209,6 @@ const handleSyncHistory = async () => {
                               ) : (
                                 <Wand2 size={18} />
                               )}
-                            </button>
-                            <button 
-                              onClick={() => handleDelete(trade.id)}
-                              className="p-2 text-slate-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-colors"
-                              title="Удалить сделку"
-                            >
-                              <Trash2 size={18} />
                             </button>
                         </div>
                       </td>
