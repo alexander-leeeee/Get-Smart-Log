@@ -219,7 +219,7 @@ const loadData = async () => {
         {currentView === 'HOME' && <HomePage user={user} onNavigate={setCurrentView} />}
         {currentView === 'DASHBOARD' && <Dashboard trades={filteredTrades} marketType={marketType} totalBalance={balance} />}
         {currentView === 'JOURNAL' && <Journal trades={filteredTrades} setTrades={setTrades} marketType={marketType} user={user} onSyncSuccess={loadData} />}
-        {currentView === 'RISK_CALC' && <RiskManager trades={filteredTrades} marketType={marketType} />}
+        {currentView === 'RISK_CALC' && <RiskManager trades={filteredTrades} marketType={marketType} totalBalance={balance} />}
         {currentView === 'AI_ANALYSIS' && <AIAnalyzer marketType={marketType} />}
         {currentView === 'EXCHANGE_CONNECT' && <ExchangeConnect language={language} user={user} />}
         {currentView === 'SETTINGS' && <Settings user={user} />}
