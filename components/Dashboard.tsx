@@ -110,8 +110,8 @@ const Dashboard: React.FC<DashboardProps> = ({ trades, marketType, totalBalance 
                 </div>
              </div>
              
-             <div className="flex items-center gap-2 mt-0.5">
-                {isSyncing ? (
+             <div className="flex items-center gap-2 mt-0.5 h-8">
+                {isSyncing || totalBalance === 0 ? (
                   <div className="flex items-center gap-2 text-blue-500/50">
                     <Loader2 size={20} className="animate-spin" />
                     <span className="text-sm font-medium animate-pulse">Синхронизация...</span>
