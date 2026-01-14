@@ -6,12 +6,13 @@ import { analyzeTradeWithAI } from '../services/geminiService';
 
 interface JournalProps {
   trades: Trade[];
-  setTrades: React.Dispatch<React.SetStateAction<Trade[]>>;
+  setTrades: (trades: Trade[]) => void;
   marketType: MarketType;
-  user: any;
+  user: User | null;
+  onSyncSuccess?: () => void; // Добавляем этот пропс (опционально)
 }
 
-const Journal: React.FC<JournalProps> = ({ trades, setTrades, marketType, user }) => {
+const Journal: React.FC<JournalProps> = ({ trades, setTrades, marketType, user, onSyncSuccess }) => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [analyzingId, setAnalyzingId] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<{id: string, text: string} | null>(null);
@@ -71,10 +72,14 @@ const handleSyncHistory = async () => {
     const data = await response.json();
     
     if (response.ok) {
-      console.log(`Синхронизация: ${data.message}`); // Оставляем только в консоли для проверки
-      loadTradesFromDb();
+      console.log(`Синхронизация: ${data.message}`);
+      // ИСПРАВЛЕНИЕ: вызываем именно onSyncSuccess, 
+      // который мы получили из App.tsx
+      if (onSyncSuccess) {
+        onSyncSuccess(); 
+      }
     } else {
-      alert(`Ошибка: ${data.error}`); // Ошибки лучше оставить, чтобы знать, если API упадет
+      alert(`Ошибка: ${data.error}`);
     }
   } catch (err) {
     alert('Ошибка связи с сервером');
