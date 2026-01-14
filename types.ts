@@ -1,4 +1,5 @@
 export type MarketType = 'SPOT' | 'FUTURES';
+export type BinanceOrderType = 'LIMIT' | 'MARKET' | 'STOP' | 'STOP_MARKET' | 'TRAILING_STOP_MARKET' | 'POST_ONLY' | 'TAKE_PROFIT' | 'TAKE_PROFIT_MARKET' | 'LIQUIDATION' | 'TWAP' | 'REVERSE' | string;
 
 export enum TradeDirection {
   LONG = 'LONG',
@@ -17,6 +18,7 @@ export interface Trade {
   pnl: number;
   fees?: number;
   marketType?: MarketType;
+  orderType?: BinanceOrderType;
 }
 
 export interface User {
