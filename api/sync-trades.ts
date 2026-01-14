@@ -19,22 +19,29 @@ export default async function handler(req: any, res: any) {
     });
 
     let allTrades = [];
+    // Берем 90 дней, чтобы точно захватить 13 января
     const since = loadHistory ? Date.now() - 90 * 24 * 60 * 60 * 1000 : Date.now() - 24 * 60 * 60 * 1000;
 
-    // Автоматический поиск символов через Income (историю транзакций)
     let symbols = [];
     if (ccxtMarketType === 'future') {
-      const income = await (exchange as any).fapiPrivateGetIncome({ startTime: since });
-      symbols = [...new Set(income.map((i: any) => i.symbol))]
-        .filter(s => s)
-        .map((s: any) => s.endsWith('USDT') ? s.replace(/USDT$/, '/USDT') : s);
-      
-      // Добавляем SOL/USDT принудительно для подстраховки
-      if (!symbols.includes('SOL/USDT')) symbols.push('SOL/USDT');
+      try {
+        const income = await (exchange as any).fapiPrivateGetIncome({ startTime: since });
+        // Превращаем SOLUSDT в правильный для CCXT формат SOL/USDT:USDT
+        symbols = [...new Set(income.map((i: any) => i.symbol))]
+          .filter(s => s)
+          .map((s: any) => s.endsWith('USDT') ? `${s.replace(/USDT$/, '/USDT')}:USDT` : s);
+        
+        // Подстраховка конкретно для твоей пары
+        if (!symbols.includes('SOL/USDT:USDT')) symbols.push('SOL/USDT:USDT');
+      } catch (e) {
+        symbols = ['SOL/USDT:USDT'];
+      }
     } else {
       const balances = await exchange.fetchBalance();
       symbols = Object.keys(balances.total).filter(c => balances.total[c] > 0).map(c => `${c}/USDT`);
     }
+
+    console.log(`Ищем сделки по парам: ${symbols.join(', ')}`);
 
     for (const symbol of symbols) {
       try {
@@ -45,12 +52,12 @@ export default async function handler(req: any, res: any) {
             market_type: marketType 
           })));
         }
-      } catch (e) { console.log(`Ошибка по ${symbol}`); }
+      } catch (e) { console.log(`Ошибка по ${symbol}: ${e.message}`); }
     }
 
     // Сохранение в базу
     for (const trade of allTrades) {
-      // Очищаем символ от ":USDT" для красоты в таблице
+      // Очищаем символ для красоты (SOL/USDT:USDT -> SOL/USDT)
       const cleanSymbol = trade.symbol.split(':')[0]; 
       
       await sql`
