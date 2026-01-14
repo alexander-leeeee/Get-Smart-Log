@@ -25,15 +25,15 @@ interface RiskSettings {
 }
 
 const RiskManager: React.FC<RiskManagerProps> = ({ trades, marketType, totalBalance }) => {
-  // 1. Получаем депозит для расчетов процентов (с учетом типа рынка)
-  const [deposit, setDeposit] = useState<number>(0);
+  // 1. Используем totalBalance из пропсов (Binance API)
+  const [deposit, setDeposit] = useState<number>(totalBalance || 0);
 
+  // Синхронизируем локальный deposit, если totalBalance обновился в App.tsx
   useEffect(() => {
-    // Получаем баланс из LS, который сохранил Dashboard
-    const storageKey = `tm_initial_balance_${marketType}`;
-    const savedBalance = localStorage.getItem(storageKey);
-    setDeposit(savedBalance ? parseFloat(savedBalance) : (marketType === 'SPOT' ? 5000 : 1000));
-  }, [marketType]);
+    if (totalBalance > 0) {
+      setDeposit(totalBalance);
+    }
+  }, [totalBalance]);
 
   // 2. Настройки риск-менеджмента (отдельные для Spot и Futures)
   const settingsKey = `tm_risk_settings_v2_${marketType}`;
