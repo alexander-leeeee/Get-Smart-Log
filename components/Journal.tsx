@@ -72,6 +72,7 @@ const handleSyncHistory = async () => {
     
     if (response.ok) {
       console.log(`Синхронизация: ${data.message}`); // Оставляем только в консоли для проверки
+      loadTradesFromDb();
     } else {
       alert(`Ошибка: ${data.error}`); // Ошибки лучше оставить, чтобы знать, если API упадет
     }
