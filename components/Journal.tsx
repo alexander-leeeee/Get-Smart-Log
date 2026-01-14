@@ -64,7 +64,8 @@ const handleSyncHistory = async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
         userId: user.id, 
-        loadHistory: true 
+        loadHistory: true,
+        marketType: marketType
       }),
     });
     const data = await response.json();
