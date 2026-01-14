@@ -6,6 +6,7 @@ import { Shield, Lock, Unlock, Save, AlertOctagon, Target, DollarSign, Percent, 
 interface RiskManagerProps {
   trades: Trade[];
   marketType: MarketType;
+  totalBalance: number;
 }
 
 type LimitType = 'USD' | 'PERCENT';
@@ -23,7 +24,7 @@ interface RiskSettings {
   maxDailyTrades: number;
 }
 
-const RiskManager: React.FC<RiskManagerProps> = ({ trades, marketType }) => {
+const RiskManager: React.FC<RiskManagerProps> = ({ trades, marketType, totalBalance }) => {
   // 1. Получаем депозит для расчетов процентов (с учетом типа рынка)
   const [deposit, setDeposit] = useState<number>(0);
 
