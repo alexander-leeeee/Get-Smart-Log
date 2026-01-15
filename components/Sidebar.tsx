@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, BookOpen, Calculator, BrainCircuit, LogOut, Settings, Moon, Sun, Home, Languages, Link2, Coins, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, BookOpen, Calculator, BrainCircuit, LogOut, Settings, Moon, Sun, Home, Languages, Link2, Coins, TrendingUp, MonitorPlay } from 'lucide-react';
 import { ViewState, Language, MarketType } from '../types';
 import { translations } from '../utils/translations';
 
@@ -31,6 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const menuItems = [
     { id: 'HOME' as ViewState, label: t.home, icon: Home },
     { id: 'DASHBOARD' as ViewState, label: t.dashboard, icon: LayoutDashboard },
+    { id: 'TERMINAL' as ViewState, label: t.terminal, icon: MonitorPlay },
     { id: 'JOURNAL' as ViewState, label: t.journal, icon: BookOpen },
     { id: 'RISK_CALC' as ViewState, label: t.risk, icon: Calculator },
     { id: 'AI_ANALYSIS' as ViewState, label: t.ai, icon: BrainCircuit },
@@ -38,8 +39,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   ];
 
   return (
-    <div className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen flex flex-col p-4 fixed left-0 top-0 hidden md:flex transition-colors">
-      <div className="flex items-center gap-2 mb-8 px-2">
+    <div className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 h-screen flex flex-col p-4 fixed left-0 top-0 hidden md:flex transition-colors z-10">
+      <div className="flex items-center gap-2 mb-6 px-2">
         <img 
           src="https://placehold.co/100x100/2563eb/ffffff?text=GSL" 
           alt="GSL Logo" 
@@ -72,7 +73,7 @@ const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
 
-      <nav className="flex-1 space-y-2">
+      <nav className="flex-1 space-y-1">
         {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentView === item.id;
