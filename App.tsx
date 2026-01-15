@@ -15,7 +15,8 @@ import Pricing from './components/Pricing';
 import Blog from './components/Blog';
 import PublicOffer from './components/PublicOffer';
 import PrivacyPolicy from './components/PrivacyPolicy';
-import { Home, LayoutDashboard, BookOpen, Calculator, BrainCircuit, Link2, Coins, TrendingUp } from 'lucide-react';
+import TradingTerminal from './components/TradingTerminal';
+import { Home, LayoutDashboard, BookOpen, Calculator, BrainCircuit, Link2, Coins, TrendingUp, MonitorPlay } from 'lucide-react';
 
 type PublicViewState = 'LANDING' | 'AUTH' | 'CONTACTS' | 'PRICING' | 'BLOG' | 'PUBLIC_OFFER' | 'PRIVACY_POLICY';
 
@@ -25,6 +26,7 @@ const App: React.FC = () => {
   const [publicView, setPublicView] = useState<PublicViewState>('LANDING');
   const [marketType, setMarketType] = useState<MarketType>('FUTURES');
   const [balance, setBalance] = useState<number>(0);
+  const [activeSymbol, setActiveSymbol] = useState<string>('BTCUSDT'); // Default symbol for Terminal
 
 const loadData = async () => {
     if (!user?.id) return;
@@ -123,6 +125,50 @@ const loadData = async () => {
     return tradeType === marketType;
   });
 
+  // --- GLOBAL RISK CALCULATION ---
+  // To lock the terminal, App must know if limits are breached.
+  // This logic partially duplicates RiskManager.tsx to lift state up.
+  const [isTradingLocked, setIsTradingLocked] = useState(false);
+
+  useEffect(() => {
+    // 1. Get deposit
+    const storageKeyBalance = `tm_initial_balance_${marketType}`;
+    const savedBalance = localStorage.getItem(storageKeyBalance);
+    const deposit = savedBalance ? parseFloat(savedBalance) : (marketType === 'SPOT' ? 5000 : 1000);
+
+    // 2. Get Settings
+    const settingsKey = `tm_risk_settings_v2_${marketType}`;
+    const savedSettings = localStorage.getItem(settingsKey);
+    
+    if (savedSettings) {
+      const settings = JSON.parse(savedSettings);
+      
+      // 3. Calc PnL today
+      const todayStr = new Date().toISOString().split('T')[0];
+      const todaysTrades = filteredTrades.filter(t => t.date === todayStr);
+      const pnl = todaysTrades.reduce((acc, t) => acc + t.pnl, 0);
+      const count = todaysTrades.length;
+
+      // 4. Calc Limits
+      const lossLimitMoney = settings.dailyLossType === 'PERCENT' 
+      ? (deposit * (settings.maxDailyLoss / 100)) 
+      : settings.maxDailyLoss;
+
+      const profitLimitMoney = settings.dailyProfitType === 'PERCENT'
+        ? (deposit * (settings.maxDailyProfit / 100))
+        : settings.maxDailyProfit;
+
+      const isLossLimitBreached = pnl <= -Math.abs(lossLimitMoney) && lossLimitMoney > 0;
+      const isProfitLimitReached = settings.maxDailyProfit > 0 && pnl >= profitLimitMoney;
+      const isTradesLimitBreached = settings.maxDailyTrades > 0 && count >= settings.maxDailyTrades;
+
+      setIsTradingLocked(isLossLimitBreached || isProfitLimitReached || isTradesLimitBreached);
+    } else {
+      setIsTradingLocked(false);
+    }
+
+  }, [marketType, filteredTrades]); // Recalc on market change or new trades
+
   // If user is not logged in, show Landing Page, Auth, Contacts, Pricing or Blog
   if (!user) {
     if (publicView === 'AUTH') {
@@ -218,6 +264,7 @@ const loadData = async () => {
       <main className="flex-1 md:ml-64 p-4 md:p-8 pt-20 md:pt-8 transition-all">
         {currentView === 'HOME' && <HomePage user={user} onNavigate={setCurrentView} />}
         {currentView === 'DASHBOARD' && <Dashboard trades={filteredTrades} marketType={marketType} totalBalance={balance} />}
+        {currentView === 'TERMINAL' && <TradingTerminal marketType={marketType} symbol={activeSymbol} isLocked={isTradingLocked} />}
         {currentView === 'JOURNAL' && <Journal trades={filteredTrades} setTrades={setTrades} marketType={marketType} user={user} onSyncSuccess={loadData} />}
         {currentView === 'RISK_CALC' && <RiskManager trades={filteredTrades} marketType={marketType} totalBalance={balance} />}
         {currentView === 'AI_ANALYSIS' && <AIAnalyzer marketType={marketType} />}
@@ -232,6 +279,9 @@ const loadData = async () => {
          </button>
          <button onClick={() => setCurrentView('DASHBOARD')} className={`p-2 rounded ${currentView === 'DASHBOARD' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-500'}`}>
            <LayoutDashboard size={20} />
+         </button>
+         <button onClick={() => setCurrentView('TERMINAL')} className={`p-2 rounded ${currentView === 'TERMINAL' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-500'}`}>
+           <MonitorPlay size={20} />
          </button>
          <button onClick={() => setCurrentView('JOURNAL')} className={`p-2 rounded ${currentView === 'JOURNAL' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-500'}`}>
            <BookOpen size={20} />
