@@ -12,6 +12,7 @@ interface TradingTerminalProps {
 
 const TradingTerminal: React.FC<TradingTerminalProps> = ({ marketType, symbol, isLocked, balance, user }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const containerId = "tradingview_advanced_chart";
   const [orderType, setOrderType] = useState<'MARKET' | 'LIMIT'>('LIMIT');
   const [stopType, setStopType] = useState<'STOP_MARKET' | 'STOP'>('STOP_MARKET');
   const [price, setPrice] = useState<string>('');
@@ -19,13 +20,12 @@ const TradingTerminal: React.FC<TradingTerminalProps> = ({ marketType, symbol, i
   const [amount, setAmount] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    // Важно: создаем уникальный ID для контейнера
-    const containerId = "tradingview_advanced_chart";
-    
+useEffect(() => {
     if (containerRef.current) {
+      // 1. Сначала полностью очищаем контейнер и создаем div с нужным ID
       containerRef.current.innerHTML = `<div id="${containerId}" style="height: 100%; width: 100%;"></div>`;
-      
+
+      // 2. Создаем и добавляем скрипт
       const script = document.createElement('script');
       script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
       script.type = "text/javascript";
@@ -35,19 +35,18 @@ const TradingTerminal: React.FC<TradingTerminalProps> = ({ marketType, symbol, i
         "symbol": `BINANCE:${symbol.replace('/', '')}`,
         "interval": "15",
         "timezone": "Etc/UTC",
-        "theme": "dark", // Всегда темная под ваш дизайн
+        "theme": "dark",
         "style": "1",
         "locale": "ru",
         "toolbar_bg": "#0f172a",
         "enable_publishing": false,
-        "hide_side_toolbar": false, // ВКЛЮЧЕНО РИСОВАНИЕ
+        "hide_side_toolbar": false, // Включает инструменты рисования
         "allow_symbol_change": true,
-        "save_image": false,
-        "container_id": containerId // Должно совпадать с ID выше
+        "container_id": containerId // Должно строго совпадать с ID div-а выше
       });
       containerRef.current.appendChild(script);
     }
-  }, [symbol]);
+  }, [symbol]); // Перезапуск при смене тикера
 
   const handlePlaceOrder = async (direction: 'BUY' | 'SELL') => {
     if (isLocked) return;
@@ -58,7 +57,7 @@ const TradingTerminal: React.FC<TradingTerminalProps> = ({ marketType, symbol, i
 
   return (
     <div className="flex h-[calc(100vh-80px)] gap-4 bg-slate-950 p-4 text-slate-200">
-      {/* ГРАФИК */}
+      {/* Контейнер для графика */}
       <div className="flex-1 bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 relative">
         <div ref={containerRef} className="h-full w-full" />
       </div>
@@ -77,7 +76,7 @@ const TradingTerminal: React.FC<TradingTerminalProps> = ({ marketType, symbol, i
             </span>
           </div>
           <div className="text-2xl font-mono font-bold text-white">
-            {balance.toLocaleString()} <span className="text-sm font-normal text-slate-500">₴</span>
+            {(balance || 0).toLocaleString()} <span className="text-sm font-normal text-slate-500">₴</span>
           </div>
         </div>
 
