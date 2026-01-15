@@ -43,6 +43,6 @@ export interface ExchangeConnection {
   createdAt: string;
 }
 
-export type ViewState = 'HOME' | 'DASHBOARD' | 'JOURNAL' | 'RISK_CALC' | 'AI_ANALYSIS' | 'EXCHANGE_CONNECT' | 'SETTINGS';
+export type ViewState = 'HOME' | 'DASHBOARD' | 'JOURNAL' | 'TERMINAL' | 'RISK_CALC' | 'AI_ANALYSIS' | 'EXCHANGE_CONNECT' | 'SETTINGS';
 
 export type Language = 'ru' | 'en' | 'ua';
