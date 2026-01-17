@@ -295,7 +295,7 @@ const RiskManager: React.FC<RiskManagerProps> = ({ trades, marketType, totalBala
               <p className="text-[10px] font-mono text-slate-400 mb-4 select-none italic">"{PROTECTIVE_PHRASE}"</p>
               <input 
                 type="text"
-                className="w-full bg-black border border-slate-700 rounded-lg p-3 text-xs text-white outline-none focus:border-blue-500"
+                className="w-1/3 bg-black border border-slate-700 rounded-lg p-3 text-xs text-white outline-none focus:border-blue-500 text-center mx-auto"
                 placeholder="Напечатайте фразу вручную..."
                 value={unlockText}
                 onPaste={(e) => e.preventDefault()} // Запрет вставки
