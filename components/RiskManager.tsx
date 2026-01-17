@@ -320,7 +320,7 @@ const RiskManager: React.FC<RiskManagerProps> = ({ trades, marketType, totalBala
             )}
           </div>
 
-          <div className={`space-y-6 ${isLocked ? 'opacity-20 pointer-events-none' : ''}`}>
+          <div className={`space-y-6 ${(tradingLocked && isLocked) ? 'opacity-20 pointer-events-none' : ''}`}>  
             
             {/* Setting: Max Loss */}
             <div>
