@@ -288,7 +288,7 @@ const RiskManager: React.FC<RiskManagerProps> = ({ trades, marketType, totalBala
 
         {/* Right Column: Settings Form */}
         <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm h-fit">
-          {isLocked && !isEditing && (
+          {(tradingLocked && isLocked) && !isEditing && (
             <div className="absolute inset-0 z-50 bg-slate-900/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
               <Lock size={40} className="text-yellow-500 mb-4" />
               <h3 className="text-lg font-bold text-white mb-2">Настройки защищены</h3>
