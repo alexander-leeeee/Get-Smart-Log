@@ -263,10 +263,10 @@ const loadData = async () => {
       {/* Main Content Area */}
       <main className="flex-1 md:ml-64 p-4 md:p-8 pt-20 md:pt-8 transition-all">
         {currentView === 'HOME' && <HomePage user={user} onNavigate={setCurrentView} />}
-        {currentView === 'DASHBOARD' && <Dashboard trades={filteredTrades} marketType={marketType} totalBalance={balance} />}
-        {currentView === 'TERMINAL' && <TradingTerminal marketType={marketType} symbol="BTCUSDT" isLocked={isTradingLocked} balance={balance} user={user} />}
+        {currentView === 'DASHBOARD' && <Dashboard trades={filteredTrades} marketType={marketType} totalBalance={balance || 0} />}
+        {currentView === 'TERMINAL' && <TradingTerminal marketType={marketType} symbol={activeSymbol} isLocked={isTradingLocked} balance={balance || 0} user={user} />}
         {currentView === 'JOURNAL' && <Journal trades={filteredTrades} setTrades={setTrades} marketType={marketType} user={user} onSyncSuccess={loadData} />}
-        {currentView === 'RISK_CALC' && <RiskManager trades={filteredTrades} marketType={marketType} totalBalance={balance} />}
+        {currentView === 'RISK_CALC' && <RiskManager trades={filteredTrades} marketType={marketType} totalBalance={balance || 0} />}
         {currentView === 'AI_ANALYSIS' && <AIAnalyzer marketType={marketType} />}
         {currentView === 'EXCHANGE_CONNECT' && <ExchangeConnect language={language} user={user} />}
         {currentView === 'SETTINGS' && <Settings user={user} />}
