@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Trade, MarketType } from '../types';
 import { Shield, Lock, Unlock, Save, AlertOctagon, Target, DollarSign, Percent, TrendingUp, AlertTriangle, ShieldCheck } from 'lucide-react';
@@ -25,6 +24,23 @@ interface RiskSettings {
 }
 
 const RiskManager: React.FC<RiskManagerProps> = ({ trades, marketType, totalBalance }) => {
+  // Состояния для защиты от тильта
+  const [isLocked, setIsLocked] = useState(true);
+  const [unlockText, setUnlockText] = useState('');
+  const [countdown, setCountdown] = useState(0);
+  const PROTECTIVE_PHRASE = "Я подтверждаю что нахожусь в трезвом уме и не пытаюсь отыграться";
+
+  // Эффект таймера охлаждения
+  useEffect(() => {
+    let timer: any;
+    if (countdown > 0) {
+      timer = setInterval(() => setCountdown(prev => prev - 1), 1000);
+    } else if (countdown === 0 && unlockText === PROTECTIVE_PHRASE && isLocked) {
+      setIsLocked(false);
+    }
+    return () => clearInterval(timer);
+  }, [countdown, unlockText, isLocked]);
+  
   // 1. Используем totalBalance из пропсов (Binance API)
   const [deposit, setDeposit] = useState<number>(totalBalance || 0);
 
@@ -117,6 +133,8 @@ const RiskManager: React.FC<RiskManagerProps> = ({ trades, marketType, totalBala
     setSettings(tempSettings);
     localStorage.setItem(settingsKey, JSON.stringify(tempSettings));
     setIsEditing(false);
+    setIsLocked(true);
+    setUnlockText('');
   };
 
   const tradingLocked = dailyStats.isLossLimitBreached || dailyStats.isTradesLimitBreached || dailyStats.isProfitLimitReached;
@@ -270,9 +288,29 @@ const RiskManager: React.FC<RiskManagerProps> = ({ trades, marketType, totalBala
 
         {/* Right Column: Settings Form */}
         <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm h-fit">
+          {isLocked && !isEditing && (
+            <div className="absolute inset-0 z-50 bg-slate-900/95 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+              <Lock size={40} className="text-yellow-500 mb-4" />
+              <h3 className="text-lg font-bold text-white mb-2">Настройки защищены</h3>
+              <p className="text-[10px] font-mono text-slate-400 mb-4 select-none italic">"{PROTECTIVE_PHRASE}"</p>
+              <input 
+                type="text"
+                className="w-full bg-black border border-slate-700 rounded-lg p-3 text-xs text-white outline-none focus:border-blue-500"
+                placeholder="Напечатайте фразу вручную..."
+                value={unlockText}
+                onPaste={(e) => e.preventDefault()} // Запрет вставки
+                onChange={(e) => {
+                  setUnlockText(e.target.value);
+                  if (e.target.value === PROTECTIVE_PHRASE) setCountdown(60);
+                }}
+              />
+              {countdown > 0 && <div className="mt-4 text-red-500 font-bold text-xl animate-pulse">{countdown}с</div>}
+            </div>
+          )}
+          
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">Правила остановки</h3>
-            {!isEditing && (
+            {!isEditing && !isLocked && (
               <button 
                 onClick={() => { setTempSettings(settings); setIsEditing(true); }}
                 className="text-blue-600 dark:text-blue-400 text-sm font-semibold hover:underline"
@@ -282,7 +320,7 @@ const RiskManager: React.FC<RiskManagerProps> = ({ trades, marketType, totalBala
             )}
           </div>
 
-          <div className="space-y-6">
+          <div className={`space-y-6 ${isLocked ? 'opacity-20 pointer-events-none' : ''}`}>
             
             {/* Setting: Max Loss */}
             <div>
