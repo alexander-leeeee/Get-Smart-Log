@@ -35,7 +35,7 @@ useEffect(() => {
     // 3. Конфигурация из рабочей версии
     script.innerHTML = JSON.stringify({
       "autosize": true,
-      "symbol": "BINANCE:SOLUSDT",
+      "symbol": "BINANCE:SOLUSDT.P",
       "interval": "5",
       "timezone": "Etc/UTC",
       "theme": "dark",
