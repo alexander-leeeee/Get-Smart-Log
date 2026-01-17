@@ -48,19 +48,29 @@ const AIAnalyzer: React.FC<AIAnalyzerProps> = ({ marketType }) => {
         </div>
       </div>
 
-      <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 mb-6">
-        <button 
-          onClick={() => setAiProvider('GEMINI')}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold rounded-lg transition-all ${aiProvider === 'GEMINI' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-500'}`}
-        >
-          <BrainCircuit size={14} /> Google Gemini
-        </button>
-        <button 
-          onClick={() => setAiProvider('GPT')}
-          className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold rounded-lg transition-all ${aiProvider === 'GPT' ? 'bg-emerald-600 text-white shadow-lg' : 'text-slate-500'}`}
-        >
-          <Activity size={14} /> ChatGPT (OpenAI)
-        </button>
+      <div className="px-4 py-2 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex justify-center transition-colors">
+        <div className="inline-flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+          <button 
+            onClick={() => setAiProvider('GEMINI')}
+            className={`flex items-center gap-2 px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${
+              aiProvider === 'GEMINI' 
+                ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' 
+                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+            }`}
+          >
+            <BrainCircuit size={14} /> Gemini
+          </button>
+          <button 
+            onClick={() => setAiProvider('GPT')}
+            className={`flex items-center gap-2 px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${
+              aiProvider === 'GPT' 
+                ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm' 
+                : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+            }`}
+          >
+            <Activity size={14} /> ChatGPT
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-white dark:bg-slate-900 transition-colors">
