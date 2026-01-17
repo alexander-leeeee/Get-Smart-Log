@@ -1,31 +1,49 @@
-// Этот код выполняет роль "мозга" бота внутри вашего сайта
 import Binance from 'node-binance-api';
-
-const binance = new Binance().options({
-  APIKEY: 'ВАШ_API_KEY_BINANCE',
-  APISECRET: 'ВАШ_SECRET_KEY_BINANCE',
-  family: 4 // Важно для стабильной связи
-});
+import mysql from 'mysql2/promise'; // Используем ваше подключение к базе
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
 
-  const data = req.body; // Получаем символ, стоп, тейк и сумму
+  const { userId, symbol, direction, amount, stopLoss, takeProfit } = req.body;
 
   try {
+    // 1. Идем в вашу базу MySQL за ключами именно этого пользователя
+    const connection = await mysql.createConnection({
+      host: 'localhost',
+      user: 'root',
+      database: 'ваша_база'
+    });
+
+    const [rows] = await connection.execute(
+      'SELECT api_key, api_secret FROM users WHERE id = ?', 
+      [userId]
+    );
+    
+    const userKeys = rows[0];
+    if (!userKeys) throw new Error('API ключи не найдены в вашем кабинете');
+
+    // 2. Инициализируем Бинанс с ключами этого пользователя
+    const binance = new Binance().options({
+      APIKEY: userKeys.api_key,
+      APISECRET: userKeys.api_secret,
+      family: 4
+    });
+
+    // 3. Выполняем сделку
     let result;
-    // Логика открытия сделки (Фьючерсы)
-    if (data.direction === 'BUY') {
-      result = await binance.futuresMarketBuy(data.symbol, data.amount);
+    if (direction === 'BUY') {
+      result = await binance.futuresMarketBuy(symbol, amount);
     } else {
-      result = await binance.futuresMarketSell(data.symbol, data.amount);
+      result = await binance.futuresMarketSell(symbol, amount);
     }
 
-    // Выставляем Стоп-Лосс и Тейк-Профит сразу после входа
-    await binance.futuresMarketSell(data.symbol, data.amount, { stopPrice: data.stopLoss, type: 'STOP_MARKET' });
-    await binance.futuresMarketSell(data.symbol, data.amount, { stopPrice: data.takeProfit, type: 'TAKE_PROFIT_MARKET' });
+    // Выставляем стоп и тейк
+    await binance.futuresMarketSell(symbol, amount, { stopPrice: stopLoss, type: 'STOP_MARKET' });
+    await binance.futuresMarketSell(symbol, amount, { stopPrice: takeProfit, type: 'TAKE_PROFIT_MARKET' });
 
+    await connection.end();
     res.status(200).json({ success: true, result });
+
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
