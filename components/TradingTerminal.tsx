@@ -54,32 +54,37 @@ useEffect(() => {
 }, [symbol]); // Срабатывает при смене монеты
 
   const handlePlaceOrder = async (direction: 'BUY' | 'SELL') => {
-    if (isLocked) return; // Блокировка, если риск-менеджер активен
+    if (isLocked) return; // Риск-менеджер блокирует нажатие
     setIsSubmitting(true);
 
-    // Собираем все данные из полей ввода
     const orderDetails = {
-      symbol: symbol, //
-      market: marketType, //
-      direction: direction, // 'BUY' или 'SELL'
-      type: orderType, // 'MARKET' или 'LIMIT'
-      entryPrice: orderType === 'LIMIT' ? price : 'MARKET', //
-      stopLoss: stopPrice, // Наш стоп
-      takeProfit: takeProfit, // Тот самый новый Тейк-Профит
-      amount: amount // Сумма сделки
+      symbol: symbol.replace('/', ''), //
+      marketType: marketType, //
+      direction: direction, //
+      amount: amount, //
+      stopLoss: stopPrice, //
+      takeProfit: takeProfit, //
     };
 
-    console.log("Отправка ордера на сервер:", orderDetails);
-
-    // Здесь будет ваш fetch запрос к API Binance/Bybit
     try {
-      // Имитация запроса
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log("Ордер успешно размещен!");
-    } catch (error) {
-      console.error("Ошибка при выставлении ордера:", error);
+      // Отправляем данные на наш созданный API файл
+      const response = await fetch('/api/trade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderDetails),
+      });
+
+      const resData = await response.json();
+
+      if (resData.success) {
+        alert(`Успех! Сделка ${direction} по ${symbol} открыта.`);
+      } else {
+        alert(`Ошибка биржи: ${resData.error}`);
+      }
+    } catch (err) {
+      alert("Ошибка сети. Проверьте соединение.");
     } finally {
-      setIsSubmitting(false); //
+      setIsSubmitting(false); // Разблокируем кнопку
     }
   };
 
