@@ -76,7 +76,7 @@ useEffect(() => {
             </span>
           </div>
           <div className="text-2xl font-mono font-bold text-white">
-            {(balance || 0).toLocaleString()} <span className="text-sm font-normal text-slate-500">₴</span>
+            {(balance || 0).toLocaleString()} <span className="text-sm font-normal text-slate-500">USDT</span>
           </div>
         </div>
 
@@ -148,8 +148,14 @@ useEffect(() => {
               </div>
 
               <div>
-                <label className="text-[10px] text-slate-500 mb-1.5 ml-1 block font-bold">СУММА ОРДЕРА (₴)</label>
-                <input type="number" value={amount} onChange={e => setAmount(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:border-emerald-500/50 outline-none transition-colors font-mono font-bold text-emerald-400" placeholder="Мин. 400 ₴" />
+                <label className="text-[10px] text-slate-500 mb-1.5 ml-1 block font-bold">СУММА ОРДЕРА (USDT)</label>
+                <input 
+                  type="number" 
+                  value={amount} 
+                  onChange={e => setAmount(e.target.value)} 
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:border-emerald-500/50 outline-none transition-colors font-mono font-bold text-emerald-400" 
+                  placeholder="0.00"
+                />
               </div>
             </div>
 
