@@ -59,6 +59,7 @@ useEffect(() => {
 
     const orderDetails = {
       symbol: "SOLUSDT",
+      marketType: "FUTURES",
       marketType: marketType, //
       direction: direction, //
       amount: amount, //
