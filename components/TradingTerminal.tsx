@@ -35,8 +35,8 @@ useEffect(() => {
     // 3. Конфигурация из рабочей версии
     script.innerHTML = JSON.stringify({
       "autosize": true,
-      "symbol": `BINANCE:${symbol.replace('/', '')}${symbol.includes('USDT') ? '' : 'USDT'}`, 
-      "interval": "15", // Поставил 15 минут, как вы хотели ранее
+      "symbol": "BINANCE:SOLUSDT",
+      "interval": "5",
       "timezone": "Etc/UTC",
       "theme": "dark",
       "style": "1",
@@ -58,7 +58,7 @@ useEffect(() => {
     setIsSubmitting(true);
 
     const orderDetails = {
-      symbol: symbol.replace('/', ''), //
+      symbol: "SOLUSDT",
       marketType: marketType, //
       direction: direction, //
       amount: amount, //
