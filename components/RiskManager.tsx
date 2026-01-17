@@ -310,7 +310,7 @@ const RiskManager: React.FC<RiskManagerProps> = ({ trades, marketType, totalBala
           
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold text-slate-900 dark:text-white">Правила остановки</h3>
-            {!isEditing && !isLocked && (
+            {!isEditing && (
               <button 
                 onClick={() => { setTempSettings(settings); setIsEditing(true); }}
                 className="text-blue-600 dark:text-blue-400 text-sm font-semibold hover:underline"
