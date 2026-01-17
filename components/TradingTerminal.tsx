@@ -12,7 +12,7 @@ interface TradingTerminalProps {
 
 const TradingTerminal: React.FC<TradingTerminalProps> = ({ marketType, symbol, isLocked, balance, user }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const containerId = "tradingview_advanced_chart";
+  const containerId = "tradingview_chart_v2";
   const [orderType, setOrderType] = useState<'MARKET' | 'LIMIT'>('LIMIT');
   const [stopType, setStopType] = useState<'STOP_MARKET' | 'STOP'>('STOP_MARKET');
   const [price, setPrice] = useState<string>('');
@@ -21,32 +21,39 @@ const TradingTerminal: React.FC<TradingTerminalProps> = ({ marketType, symbol, i
   const [isSubmitting, setIsSubmitting] = useState(false);
 
 useEffect(() => {
-    if (containerRef.current) {
-      // 1. Сначала полностью очищаем контейнер и создаем div с нужным ID
-      containerRef.current.innerHTML = `<div id="${containerId}" style="height: 100%; width: 100%;"></div>`;
+  // Проверяем, есть ли контейнер
+  if (!containerRef.current) return;
 
-      // 2. Создаем и добавляем скрипт
-      const script = document.createElement('script');
-      script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
-      script.type = "text/javascript";
-      script.async = true;
-      script.innerHTML = JSON.stringify({
-        "autosize": true,
-        "symbol": `BINANCE:${symbol.replace('/', '')}`,
-        "interval": "15",
-        "timezone": "Etc/UTC",
-        "theme": "dark",
-        "style": "1",
-        "locale": "ru",
-        "toolbar_bg": "#0f172a",
-        "enable_publishing": false,
-        "hide_side_toolbar": false, // Включает инструменты рисования
-        "allow_symbol_change": true,
-        "container_id": containerId // Должно строго совпадать с ID div-а выше
-      });
-      containerRef.current.appendChild(script);
-    }
-  }, [symbol]); // Перезапуск при смене тикера
+  // Очищаем старое содержимое
+  containerRef.current.innerHTML = `<div id="${containerId}" style="height: 100%; width: 100%;"></div>`;
+
+  const script = document.createElement('script');
+  script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+  script.type = "text/javascript";
+  script.async = true;
+
+  // Формируем конфиг
+  const config = {
+    "autosize": true,
+    "symbol": `BINANCE:${symbol.replace('/', '')}${symbol.includes('USDT') ? '' : 'USDT'}`,
+    "interval": "15",
+    "timezone": "Etc/UTC",
+    "theme": "dark", // Можно заменить на: document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+    "style": "1",
+    "locale": "ru",
+    "toolbar_bg": "#0f172a",
+    "enable_publishing": false,
+    "hide_side_toolbar": false, // Оставляем инструменты рисования
+    "allow_symbol_change": true,
+    "container_id": containerId // Должно строго совпадать с ID выше
+  };
+
+  script.innerHTML = JSON.stringify(config);
+  
+  // Добавляем скрипт в созданный div
+  containerRef.current.appendChild(script);
+
+}, [symbol]); // Перезагружаем график при смене тикера
 
   const handlePlaceOrder = async (direction: 'BUY' | 'SELL') => {
     if (isLocked) return;
