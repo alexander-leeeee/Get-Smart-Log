@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@google/genai": "^1.35.0",
     "@neondatabase/serverless": "^0.10.4",
     "ccxt": "^4.4.53",
