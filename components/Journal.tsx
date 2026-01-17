@@ -10,6 +10,7 @@ interface JournalProps {
   marketType: MarketType;
   user: User | null;
   onSyncSuccess?: () => void; // Добавляем этот пропс (опционально)
+  aiProvider: 'GEMINI' | 'GPT'; // Добавляем проп из App.tsx
 }
 
 const formatOrderType = (type?: string) => {
@@ -27,7 +28,7 @@ const formatOrderType = (type?: string) => {
   return types[type] || type;
 };
 
-const Journal: React.FC<JournalProps> = ({ trades, setTrades, marketType, user, onSyncSuccess }) => {
+const Journal: React.FC<JournalProps> = ({ trades, setTrades, marketType, user, onSyncSuccess, aiProvider }) => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [analyzingId, setAnalyzingId] = useState<string | null>(null);
   const [analysisResult, setAnalysisResult] = useState<{id: string, text: string} | null>(null);
@@ -39,7 +40,8 @@ const Journal: React.FC<JournalProps> = ({ trades, setTrades, marketType, user, 
     setAnalyzingId(trade.id);
     setAnalysisResult(null);
     setEditingNoteId(null); // Close note editor if open
-    const result = await analyzeTradeWithAI(trade);
+    
+    const result = await analyzeTradeWithAI(trade, aiProvider);
     setAnalysisResult({ id: trade.id, text: result });
     setAnalyzingId(null);
   };
