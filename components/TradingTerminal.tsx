@@ -21,39 +21,36 @@ const TradingTerminal: React.FC<TradingTerminalProps> = ({ marketType, symbol, i
   const [isSubmitting, setIsSubmitting] = useState(false);
 
 useEffect(() => {
-  // Проверяем, есть ли контейнер
-  if (!containerRef.current) return;
+  if (containerRef.current) {
+    // 1. Очищаем контейнер перед каждой инициализацией
+    containerRef.current.innerHTML = ''; 
 
-  // Очищаем старое содержимое
-  containerRef.current.innerHTML = `<div id="${containerId}" style="height: 100%; width: 100%;"></div>`;
+    // 2. Создаем скрипт вручную
+    const script = document.createElement('script');
+    script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
+    script.type = "text/javascript";
+    script.async = true;
 
-  const script = document.createElement('script');
-  script.src = "https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js";
-  script.type = "text/javascript";
-  script.async = true;
+    // 3. Конфигурация из рабочей версии
+    script.innerHTML = JSON.stringify({
+      "autosize": true,
+      "symbol": `BINANCE:${symbol.replace('/', '')}${symbol.includes('USDT') ? '' : 'USDT'}`, 
+      "interval": "15", // Поставил 15 минут, как вы хотели ранее
+      "timezone": "Etc/UTC",
+      "theme": "dark",
+      "style": "1",
+      "locale": "ru",
+      "enable_publishing": false,
+      "hide_side_toolbar": false, // ВКЛЮЧАЕМ инструменты рисования
+      "allow_symbol_change": true,
+      "calendar": false,
+      "support_host": "https://www.tradingview.com"
+    });
 
-  // Формируем конфиг
-  const config = {
-    "autosize": true,
-    "symbol": `BINANCE:${symbol.replace('/', '')}${symbol.includes('USDT') ? '' : 'USDT'}`,
-    "interval": "15",
-    "timezone": "Etc/UTC",
-    "theme": "dark", // Можно заменить на: document.documentElement.classList.contains('dark') ? 'dark' : 'light'
-    "style": "1",
-    "locale": "ru",
-    "toolbar_bg": "#0f172a",
-    "enable_publishing": false,
-    "hide_side_toolbar": false, // Оставляем инструменты рисования
-    "allow_symbol_change": true,
-    "container_id": containerId // Должно строго совпадать с ID выше
-  };
-
-  script.innerHTML = JSON.stringify(config);
-  
-  // Добавляем скрипт в созданный div
-  containerRef.current.appendChild(script);
-
-}, [symbol]); // Перезагружаем график при смене тикера
+    // 4. Добавляем скрипт в DOM
+    containerRef.current.appendChild(script);
+  }
+}, [symbol]); // Срабатывает при смене монеты
 
   const handlePlaceOrder = async (direction: 'BUY' | 'SELL') => {
     if (isLocked) return;
