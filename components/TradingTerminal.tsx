@@ -19,6 +19,7 @@ const TradingTerminal: React.FC<TradingTerminalProps> = ({ marketType, symbol, i
   const [stopPrice, setStopPrice] = useState<string>('');
   const [amount, setAmount] = useState<string>('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [takeProfit, setTakeProfit] = useState<string>('');
 
 useEffect(() => {
   if (containerRef.current) {
@@ -53,10 +54,33 @@ useEffect(() => {
 }, [symbol]); // Срабатывает при смене монеты
 
   const handlePlaceOrder = async (direction: 'BUY' | 'SELL') => {
-    if (isLocked) return;
+    if (isLocked) return; // Блокировка, если риск-менеджер активен
     setIsSubmitting(true);
-    // Логика отправки...
-    setTimeout(() => setIsSubmitting(false), 1000);
+
+    // Собираем все данные из полей ввода
+    const orderDetails = {
+      symbol: symbol, //
+      market: marketType, //
+      direction: direction, // 'BUY' или 'SELL'
+      type: orderType, // 'MARKET' или 'LIMIT'
+      entryPrice: orderType === 'LIMIT' ? price : 'MARKET', //
+      stopLoss: stopPrice, // Наш стоп
+      takeProfit: takeProfit, // Тот самый новый Тейк-Профит
+      amount: amount // Сумма сделки
+    };
+
+    console.log("Отправка ордера на сервер:", orderDetails);
+
+    // Здесь будет ваш fetch запрос к API Binance/Bybit
+    try {
+      // Имитация запроса
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log("Ордер успешно размещен!");
+    } catch (error) {
+      console.error("Ошибка при выставлении ордера:", error);
+    } finally {
+      setIsSubmitting(false); //
+    }
   };
 
   return (
@@ -145,6 +169,17 @@ useEffect(() => {
                   <input type="number" value={price} onChange={e => setPrice(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:border-blue-500 outline-none transition-colors font-mono" placeholder="0.00" />
                 </div>
               )}
+
+              <div>
+                <label className="text-[10px] text-slate-500 mb-1.5 ml-1 block font-bold">ЦЕНА ТЕЙК-ПРОФИТА</label>
+                <input 
+                  type="number" 
+                  value={takeProfit} 
+                  onChange={e => setTakeProfit(e.target.value)} 
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:border-emerald-500/50 outline-none transition-colors font-mono" 
+                  placeholder="0.00" 
+                />
+              </div>
               
               <div>
                 <label className="text-[10px] text-slate-500 mb-1.5 ml-1 block font-bold">ЦЕНА СТОП-ЛОССА</label>
